@@ -24,6 +24,9 @@ This OS is a good candidate to be the foundation for a future homebrew computer.
 * Multitasking
   * [x] Cooperative (might still be possible)
   * [x] Preemptive (now preferred)
+* Scheduling
+  * [x] Basic single level round-robin - Highly unoptimized for now :)
+  * [x] Support for async operations - e.g. I/O, time wait 
 * [x] Basic Async/Await mechanism aimed for I/O
 * Shell
   * [x] Start new processes (blocking)
@@ -47,3 +50,12 @@ This OS is a good candidate to be the foundation for a future homebrew computer.
   * `uptime` - shows uptime since last reset (ugly output formatting)
 * [ ] Filesystem
 * [ ] File support
+
+## Architecture (WIP)
+```mermaid
+  graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+```
