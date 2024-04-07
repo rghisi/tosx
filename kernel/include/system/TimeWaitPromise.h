@@ -17,7 +17,7 @@ private:
     uint_fast32_t expiration;
 };
 
-TimeWaitPromise::TimeWaitPromise(uint16_t ms) {
+TimeWaitPromise::TimeWaitPromise(uint_fast16_t ms) {
     expiration = OS::now() + ms;
 }
 

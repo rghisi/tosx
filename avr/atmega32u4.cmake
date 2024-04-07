@@ -11,7 +11,7 @@ add_compile_definitions("F_CPU=${F_CPU}")
 add_compile_options("-mmcu=${TARGET_CPU}")
 add_compile_options("-mcall-prologues")
 add_compile_options("-I${CMAKE_SOURCE_DIR}/avr/avr-libstdcpp/include")
-add_compile_options("-I${CMAKE_SOURCE_DIR}/kernel/include")
+add_compile_options("-I${CMAKE_SOURCE_DIR}/avr/include")
 add_compile_options("-fdata-sections")
 add_compile_options("-ffunction-sections")
 add_compile_options("-finline-functions")
@@ -22,12 +22,8 @@ add_link_options(-Wl,--print-memory-usage,--gc-sections,-u,vfprintf -lprintf_flt
 add_link_options("-mmcu=${TARGET_CPU}")
 
 add_executable(${PROJECT_NAME}
-        avr/generic/AVRContextSwitching.h
-        avr/generic/AVRCpu.h
-        avr/generic/AVRCpu.cpp
-        avr/atmega32u4/SerialPort0.h
-        avr/atmega32u4/SerialPort0.cpp
         avr/atmega32u4/Main.cpp
+        avr/atmega32u4/SerialPort0.h
 )
 
 set(FLASH_VERBOSE_FLAG "-v")

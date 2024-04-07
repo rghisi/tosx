@@ -1,11 +1,11 @@
-#include "setup/C.h"
-#include "setup/Cpp.h"
-#include "../generic/AVRCpu.h"
+#include "generic/C.h"
+#include "generic/Cpp.h"
+#include "generic/AVRCpu.h"
 #include "SerialPort0.h"
 #include "comms/Serial.h"
 #include "system/DoublyLinkedMemoryAllocator.h"
 #include "system/OS.h"
-#include "console/Shell.h"
+#include "shell/Shell.h"
 
 Kernel* OS::kernel = nullptr;
 auto ma = DoublyLinkedMemoryAllocator<1792>();
