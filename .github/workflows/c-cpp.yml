@@ -1,0 +1,22 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "**" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: run tests
+      run: |
+          sudo apt-get -y update
+          sudo apt-get -y install google-mock libgmock-dev libgtest-dev
+          mkdir build-tests
+          cd build-tests
+          cmake .. -DCMAKE_BUILD_TYPE=Tests
+          make
+          ./tosx
