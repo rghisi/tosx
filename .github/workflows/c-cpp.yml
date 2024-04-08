@@ -11,6 +11,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: cd tosx
+      run: cd tosx
     - name: configure
       run: mkdir build-tests
     - name: cd
