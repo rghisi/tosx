@@ -11,17 +11,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: cd tosx
-      run: ls -lh
-    - name: pwd
-      run: pwd
-    - name: configure
-      run: mkdir build-tests
-    - name: cd
-      run: cd build-tests
-    - name: cmake
-      run: cmake .. -DCMAKE_BUILD_TYPE=Tests
-    - name: make
-      run: make
-    - name: run-tests
-      run: ./tosx
+    - name: run tests
+      run: |
+          mkdir build-tests
+          cd build-tests
+          cmake .. -DCMAKE_BUILD_TYPE=Tests
+          make
+          ./tosx
