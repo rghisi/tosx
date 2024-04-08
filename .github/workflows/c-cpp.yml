@@ -13,6 +13,8 @@ jobs:
     - uses: actions/checkout@v3
     - name: run tests
       run: |
+          sudo apt-get -y update
+          sudo apt-get -y install google-mock libgmock-dev libgtest-dev
           mkdir build-tests
           cd build-tests
           cmake .. -DCMAKE_BUILD_TYPE=Tests
