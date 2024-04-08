@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: configure
-      run: mkdir build-test
+      run: mkdir build-tests
     - name: cd
       run: cd build-tests
     - name: cmake
