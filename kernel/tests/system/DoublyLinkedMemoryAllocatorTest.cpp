@@ -3,7 +3,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "../../../avr/src/system/DoublyLinkedMemoryAllocator.h"
+#include "system/DoublyLinkedMemoryAllocator.h"
 
 TEST(MemoryAllocator, ShouldHave100PercentFreeWhenStarting) {
     constexpr auto managedMemorySize = 640;
