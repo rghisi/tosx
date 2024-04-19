@@ -2,47 +2,49 @@
 // Created by ghisi on 18.04.24.
 //
 
-#ifndef TOSX_FSNODE_H
-#define TOSX_FSNODE_H
+#ifndef TOSX_NODE_H
+#define TOSX_NODE_H
 
+#include <cstdint>
+#include <vector>
 
-class FSNode {
+class Node {
 public:
-    explicit FSNode(const char *name);
-    FSNode(const char *name, FSNode *parent);
+    explicit Node(const char *name);
+    Node(const char *name, Node *parent);
     const char *name();
-    std::unique_ptr<char[]> pwd();
-    bool operator==(const FSNode &rhs) const;
-    bool operator!=(const FSNode &rhs) const;
+    std::unique_ptr<char[]> path();
+    bool operator==(const Node &rhs) const;
+    bool operator!=(const Node &rhs) const;
 
 protected:
     const char *nodeName;
-    FSNode *parent = nullptr;
+    Node *parent = nullptr;
 };
 
-FSNode::FSNode(const char *name) {
+Node::Node(const char *name) {
     this->nodeName = name;
 }
 
-FSNode::FSNode(const char *name, FSNode *parent) {
+Node::Node(const char *name, Node *parent) {
     this->nodeName = name;
     this->parent = parent;
 }
 
-bool FSNode::operator==(const FSNode &rhs) const {
+bool Node::operator==(const Node &rhs) const {
     return nodeName == rhs.nodeName &&
            parent == rhs.parent;
 }
 
-bool FSNode::operator!=(const FSNode &rhs) const {
+bool Node::operator!=(const Node &rhs) const {
     return !(rhs == *this);
 }
 
-const char *FSNode::name() {
+const char *Node::name() {
     return nodeName;
 }
 
-std::unique_ptr<char[]> FSNode::pwd() {
+std::unique_ptr<char[]> Node::path() {
     std::vector<const char*> path;
     auto node = this;
     uint_fast16_t size = 1;
@@ -70,4 +72,4 @@ std::unique_ptr<char[]> FSNode::pwd() {
 }
 
 
-#endif //TOSX_FSNODE_H
+#endif //TOSX_NODE_H
