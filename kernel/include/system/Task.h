@@ -17,12 +17,17 @@ public:
     virtual void execute() = 0;
     void initialize();
     TaskState state();
-    void running();
-    void waiting();
-    void block();
+    virtual void running() final;
+    virtual void ready() final;
+    virtual void block() final;
     Stack *stack;
 //    TaskStats stats();
-protected:
+    const char* name;
+    void terminated();
+
+    bool isRunning();
+
+   protected:
     TaskState taskState = TaskState::CREATED;
 //    TaskStats taskStats = TaskStats();
 //    MemoryAllocator<128> *memoryAllocator;

@@ -58,9 +58,9 @@ bool CommandLine::hasParameter(const char *paramName) {
 
 CommandLine::~CommandLine() {
     for (size_t i = 0; i < numberOfParameters; i++) {
-        delete parts[i];
+        delete[] parts[i];
     }
-    delete parts;
+    delete[] parts;
 }
 
 bool CommandLine::endsWith(char c) {

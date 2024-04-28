@@ -13,7 +13,7 @@ class Shell {
 public:
     Shell();
     [[noreturn]] void run();
-    std::array<ExecutableFile*, 7> apps;
+    std::array<ExecutableFile*, 9> apps;
     std::array<ShellCommand*, 1> commands;
     static int_fast8_t run(char *args);
 private:
@@ -33,8 +33,8 @@ private:
     char line[COLUMNS] = {};
     void resetLine();
     void executeLineHandler();
-    void executeForeground(int_fast8_t (*entryPoint)(char *), char *args);
-    void executeBackground(int_fast8_t (*entryPoint)(char *), char *args);
+    void executeForeground(const char *name, int_fast8_t (*entryPoint)(char *), char *args);
+    void executeBackground(const char *name, int_fast8_t (*entryPoint)(char *), char *args);
 };
 
 #endif //AVR_SHELL_H

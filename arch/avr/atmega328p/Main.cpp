@@ -1,5 +1,5 @@
-#include "generic/C.h"
-#include "generic/Cpp.h"
+#include "C.h"
+#include "Cpp.h"
 #include "generic/AVRCpu.h"
 #include "SerialPort0.h"
 #include "comms/Serial.h"
@@ -8,7 +8,7 @@
 #include "shell/Shell.h"
 
 Kernel* OS::kernel = nullptr;
-auto ma = DoublyLinkedMemoryAllocator<1792>();
+auto ma = DoublyLinkedMemoryAllocator<1280>();
 
 MemoryAllocator *OS::memoryAllocator = &ma;
 auto serialPort0 = SerialPort0();

@@ -7,7 +7,7 @@
 #include "system/StaticStack.h"
 
 Task::Task() {
-    this->stack = new StaticStack<64>();
+    this->stack = new StaticStack<128>();
 }
 
 Task::~Task() {
@@ -31,8 +31,14 @@ TaskState Task::state() {
     return taskState;
 }
 
-void Task::waiting() {
-    taskState = TaskState::WAITING;
+void Task::ready() {
+    taskState = TaskState::READY;
+}
+void Task::terminated() {
+  taskState = TaskState::TERMINATED;
+}
+bool Task::isRunning() {
+  return taskState == TaskState::RUNNING;
 }
 
 //TaskStats Task::stats() {

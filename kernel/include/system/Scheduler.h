@@ -56,13 +56,14 @@ public:
 
 class Scheduler: public Task {
 public:
+    void setIdleTask(Task *idleTask);
     void execute() override;
     void schedule(Task *task);
     void add(Task *task, Promise *promise);
 private:
     FifoQueue<Task*>* scheduledTasks = new CircularQueue<Task*, 5>();
     FifoQueue<TaskPromise*>* taskPromises = new CircularQueue<TaskPromise*, 5>();
-    IdleTask* idleTask = new IdleTask();
+    Task* idleTask;
     void processPromises();
     void processRegularTasks();
 };

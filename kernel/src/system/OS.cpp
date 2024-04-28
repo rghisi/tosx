@@ -33,31 +33,34 @@ void OS::sleep(uint_fast16_t ms) {
     kernel->sleep(ms);
 }
 
+void OS::terminate(Task *task) {
+ kernel->terminate(task);
+}
+
 void *OS::memalloc(size_t len) {
-    disablePreemption();
+//    kernel->disableInterrupts();
     auto ptr = memoryAllocator->allocate(len);
     if (ptr == nullptr) {
         Serial::send("\n\rOut of Memory - Aborting\n\r");
-//        OS::cpu->disableInterrupts();
         while (true);
     }
-    enablePreemption();
+//    kernel->enableInterrupts();
     return ptr;
 }
 
 void OS::memfree(void *p) {
-    disablePreemption();
-    memoryAllocator->free(p);
-    enablePreemption();
+//  kernel->disableInterrupts();
+  memoryAllocator->free(p);
+//  kernel->enableInterrupts();
 }
 
 MemoryStats *OS::memoryStats() {
     return memoryAllocator->stats();
 }
 
-Task *OS::createTask(int_fast8_t (*entryPoint)(char *), char *args) {
+Task *OS::createTask(const char* name, int_fast8_t (*entryPoint)(char *), char *args) {
     //switch context or allocator, then...
-    auto* task = new ExecutableTask(entryPoint, args);
+    auto* task = new ExecutableTask(name, entryPoint, args);
     return task;
 }
 
@@ -79,4 +82,17 @@ void OS::incrementTick() {
 
 uint32_t OS::now() {
     return kernel->now();
+}
+
+bool OS::disableInterupts() {
+  if (kernel == nullptr) {
+    return false;
+  }
+  return kernel->disableInterrupts();
+}
+bool OS::enableInterupts() {
+  if (kernel == nullptr) {
+    return false;
+  }
+  return kernel->enableInterrupts();
 }

@@ -1,9 +1,11 @@
-target_sources(${PROJECT_NAME} INTERFACE
+target_sources(${TARGET} INTERFACE
         apps/include/misc/Clear.h
         apps/include/misc/CountDown.h
         apps/include/misc/Echo.h
         apps/include/misc/Free.h
         apps/include/misc/LongTask.h
+        apps/include/misc/MemTest.h
+        apps/include/misc/Null.h
         apps/include/misc/PiTask.h
         apps/include/shell/CommandLine.h
         apps/include/shell/Console.h
@@ -13,7 +15,7 @@ target_sources(${PROJECT_NAME} INTERFACE
         apps/include/shell/commands/List.h
 )
 
-target_sources(${PROJECT_NAME} PUBLIC
+target_sources(${TARGET} PUBLIC
         apps/src/shell/ExecutableFile.cpp
         apps/src/shell/Shell.cpp
 )

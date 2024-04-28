@@ -22,6 +22,7 @@ private:
 
 void Free::reportMemory(Flag flag) {
     auto memoryStats = OS::memoryStats();
+    auto size = memoryStats->size;
     auto total = scale(memoryStats->used + memoryStats->free, flag);
     auto used = scale(memoryStats->used, flag);
     auto free = scale(memoryStats->free, flag);
@@ -29,7 +30,9 @@ void Free::reportMemory(Flag flag) {
     auto usedBlocks = scale(memoryStats->usedBlocks, flag);
     auto freeBlocks = scale(memoryStats->freeBlocks, flag);
 
-    Serial::send("T ");
+    Serial::send("S ");
+    Serial::send(size);
+    Serial::send("\n\rT ");
     Serial::send(total);
     Serial::send("\n\rU ");
     Serial::send(used);

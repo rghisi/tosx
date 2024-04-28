@@ -9,7 +9,6 @@
 #include <cstdio>
 #include "comms/Serial.h"
 #include "system/Task.h"
-#include "system/StaticStack.h"
 #include "system/OS.h"
 
 class LongTask {

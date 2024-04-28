@@ -11,7 +11,7 @@
 
 class ExecutableTask: public Task {
 public:
-    ExecutableTask(int_fast8_t (*entryPoint)(char *), char *args);
+    ExecutableTask(const char* name, int_fast8_t (*entryPoint)(char *), char *args);
     ~ExecutableTask() override;
     void execute() override;
 private:
@@ -19,10 +19,11 @@ private:
     char *args;
 };
 
-ExecutableTask::ExecutableTask(int_fast8_t (*entryPoint)(char *), char *args) {
+ExecutableTask::ExecutableTask(const char* name, int_fast8_t (*entryPoint)(char *), char *args) {
     this->entryPointFunction = entryPoint;
     this->args = args;
     taskState = TaskState::CREATED;
+    this->name = name;
 }
 
 void ExecutableTask::execute() {

@@ -115,8 +115,8 @@ The following non-trivial, real-world example, for instance,
 wraps instances of an overly-simplified LED class abstraction
 as object-references in an `std::array`.
 Once stored, the application exercises the LED's toggle
-function in an algorithmic loop with `toggle()`-method call
-expressed via lambda function.
+operation in an algorithmic loop with `toggle()`-method call
+expressed via lambda operation.
 
 ```cpp
 #include <algorithm>
@@ -283,7 +283,7 @@ widths according to these command line options.
 - **`<cmath>`:** In compiler versions of `avr-gcc` 11 and higher,
 slight discrepancies in the signatures of functions like
 `isnan()`, `isinf()`, etc. seem to be in the process of being corrected.
-Future patches of math function signatures in `<cmath>`
+Future patches of math operation signatures in `<cmath>`
 may be needed as the `<math.h>` header continues to evolve.
 
 ## C++20 `constexpr` support

@@ -26,7 +26,9 @@ int_fast8_t CountDown::run(char *args) {
         Serial::send(instance);
         Serial::send((size_t)c);
         Serial::send(NEW_LINE);
-//        _delay_ms(500);
+        for (uintptr_t t = 0; t < 8000000; t++){
+          __asm volatile ("nop");
+        }
     }
     Serial::send("End of ");
     Serial::send(instance);

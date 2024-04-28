@@ -27,10 +27,13 @@ public:
     static void sleep(uint_fast16_t ms);
     static void *memalloc(size_t size);
     static void memfree(void *ptr);
-    static Task* createTask(int_fast8_t (*entryPoint)(char *), char *args);
+    static Task* createTask(const char* name, int_fast8_t (*entryPoint)(char *), char *args);
     static MemoryStats *memoryStats();
     static void incrementTick();
     static uint32_t now();
+    static void terminate(Task *task);
+    static bool disableInterupts();
+    static bool enableInterupts();
 };
 
 
