@@ -34,14 +34,14 @@ Shell::Shell() {
 }
 
 [[noreturn]] void Shell::run() {
-  Serial::send("Welcome to the Shell\n\r");
+  printf("Welcome to the Shell\r\n");
   while (true) {
     if (column == FIRST && prompt) {
       Serial::send("\x1b[1;92m#\x1b[0m ");
       prompt = false;
     }
     auto promise = static_cast<PromiseWithReturn<char> *>(
-        OS::await(Serial::readCharAsync()));
+    OS::await(Serial::readCharAsync()));
     auto character = promise->data;
     delete promise;
     Serial::send(character);
@@ -138,7 +138,6 @@ void Shell::executeBackground(const char *name,
                               int_fast8_t (*entryPoint)(char *), char *args) {
   auto task = OS::createTask(name, entryPoint, args);
   OS::schedule(task);
-  OS::yield();
 }
 
 int_fast8_t Shell::run(char *args) {

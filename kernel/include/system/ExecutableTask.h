@@ -22,14 +22,11 @@ private:
 ExecutableTask::ExecutableTask(const char* name, int_fast8_t (*entryPoint)(char *), char *args) {
     this->entryPointFunction = entryPoint;
     this->args = args;
-    taskState = TaskState::CREATED;
     this->name = name;
 }
 
 void ExecutableTask::execute() {
-    taskState = TaskState::RUNNING;
     entryPointFunction(args);
-    taskState = TaskState::TERMINATED;
 }
 
 ExecutableTask::~ExecutableTask() {

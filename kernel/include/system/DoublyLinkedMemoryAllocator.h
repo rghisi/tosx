@@ -52,7 +52,7 @@ class DoublyLinkedMemoryAllocator : public MemoryAllocator {
 
 template <size_t S>
 size_t DoublyLinkedMemoryAllocator<S>::aligned(size_t s) {
-  return (s + 8 - 1) & ~(8 - 1);
+  return (s + 8l - 1l) & ~(8l - 1l);
 }
 
 template <size_t S>
@@ -72,7 +72,9 @@ uintptr_t *DoublyLinkedMemoryAllocator<S>::allocate(size_t requestedBytes) {
   auto *allocation = findBestAllocation(totalBytesRequired);
 
   if (allocation == nullptr) {
-    Serial::send('n');
+    if (interruptsWereDisabled) {
+      OS::enableInterupts();
+    }
     return nullptr;
   }
 
@@ -81,27 +83,16 @@ uintptr_t *DoublyLinkedMemoryAllocator<S>::allocate(size_t requestedBytes) {
   allocation->size = totalBytesRequired;
   allocation->flags = AllocationFlags::USED;
 
-  const auto currentAllocationAddress =
-      ((uintptr_t *)std::addressof(*allocation));
-  const auto currentAllocationDataAddress =
-      currentAllocationAddress + (HeaderSize >> BytesToWordShift);
-  const auto sizeInWords =
-      (totalBytesRequired - HeaderSize) >> BytesToWordShift;
+  const auto currentAllocationAddress = ((uintptr_t *)std::addressof(*allocation));
+  const auto currentAllocationDataAddress = &currentAllocationAddress[(HeaderSize >> BytesToWordShift)];
+  const auto sizeInWords = (totalBytesRequired - HeaderSize) >> BytesToWordShift;
   for (size_t i = 0; i < sizeInWords; i++) {
     currentAllocationDataAddress[i] = 0x00;
   }
 
-  //    currentAllocationDataAddress[sizeInWords - 1] = 0xDDDDDDDD;
-
-  if (bytesLeftAfterAllocation > 0) {
-    const auto nextAllocationAddress =
-        currentAllocationAddress + (totalBytesRequired >> BytesToWordShift);
-    if ((uintptr_t)nextAllocationAddress > max ||
-        (uintptr_t)nextAllocationAddress < min) {
-      Serial::send('o');
-    }
-    const auto freeBlock = new (nextAllocationAddress)
-        Allocation(bytesLeftAfterAllocation - HeaderSize);
+  if (bytesLeftAfterAllocation > (HeaderSize << 1)) {
+    const auto nextAllocationAddress = &currentAllocationAddress[(totalBytesRequired >> BytesToWordShift)];
+    const auto freeBlock = new (nextAllocationAddress) Allocation(bytesLeftAfterAllocation - HeaderSize);
     freeBlock->next = allocation->next;
     freeBlock->previous = allocation;
     allocation->next = freeBlock;
@@ -138,28 +129,19 @@ void DoublyLinkedMemoryAllocator<S>::free(void *ptr) {
   }
   auto interruptsWereDisabled = OS::disableInterupts();
   auto *dataPointerAddress = (uintptr_t *)ptr;
-  auto *allocationAddress =
-      dataPointerAddress - (HeaderSize >> BytesToWordShift);
+  auto *allocationAddress = dataPointerAddress - (HeaderSize >> BytesToWordShift);
   auto allocation = (Allocation *)(allocationAddress);
-  const auto sizeInWords = allocation->size >> (BytesToWordShift);
-  //    const auto safeGuard = allocationAddress[sizeInWords - 1];
-  //    if (safeGuard != 0xDDDDDDDD) {
-  //      Serial::send('f');
-  //      Serial::send(safeGuard);
-  //    }
+
   if (allocation->flags == AllocationFlags::USED) {
     allocation->flags = AllocationFlags::FREE;
 
     if (allocation->previous != nullptr && allocation->previous->isFree()) {
       allocation = merge(allocation->previous, allocation);
     }
+
     if (allocation->next != nullptr && allocation->next->isFree()) {
       allocation = merge(allocation, allocation->next);
     }
-  }
-
-  for (size_t i = HeaderSize; i < sizeInWords; i++) {
-    allocationAddress[i] = 0x21436587;
   }
 
   if (interruptsWereDisabled) {

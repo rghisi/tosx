@@ -4,6 +4,8 @@
 
 #include "system/Kernel.h"
 
+#include <cstdio>
+
 #include "comms/Serial.h"
 #include "system/TaskState.h"
 #include "system/TimeWaitPromise.h"
@@ -27,7 +29,7 @@ void Kernel::start() {
   enablePreemption();
   Serial::send("OK\n\r");
   Serial::send("\tSetting up scheduler\n\r");
-  auto idleTask = new IdleTask();
+  idleTask = new IdleTask();
   cpu->initialize(idleTask);
   idleTask->ready();
   scheduler->setIdleTask(idleTask);
@@ -38,8 +40,10 @@ void Kernel::start() {
 }
 
 void Kernel::schedule(Task *task) {
-  cpu->initialize(task);
-  task->ready();
+  if (task->isCreated()) {
+    cpu->initialize(task);
+    task->ready();
+  }
   scheduler->schedule(task);
 }
 
@@ -49,14 +53,10 @@ void Kernel::schedule(PeriodicTask *periodicTask) {
 
 void Kernel::terminate(Task *task) {
   task->terminated();
-  if (currentTask == task) {
-    currentTask = nullptr;
-    yield();
-  }
+  yield();
 }
 
 void Kernel::switchToTask(Task *task) {
-//  Serial::send('s');
   currentTask = task;
   currentTask->running();
   checkStackOverflow(currentTask);
@@ -66,7 +66,6 @@ void Kernel::switchToTask(Task *task) {
 }
 
 void Kernel::yield() {
-//  Serial::send('y');
   uintptr_t *stackPointerToStore = nullptr;
   if (currentTask != nullptr) {
     if (currentTask->isRunning()) {
@@ -74,21 +73,18 @@ void Kernel::yield() {
     }
     stackPointerToStore = (uintptr_t *)&(currentTask->stack->pointer);
     checkStackOverflow(currentTask);
-    currentTask = nullptr;
   }
   checkStackOverflow(scheduler);
   cpu->swapContext(stackPointerToStore, scheduler->stack->pointer);
 }
 
 void Kernel::preempt() {
-//  Serial::send('p');
   if (preemptionEnabled) {
     uintptr_t *stackPointerToStore = nullptr;
     if (currentTask != nullptr) {
       currentTask->ready();
       stackPointerToStore = (uintptr_t *)&currentTask->stack->pointer;
       checkStackOverflow(currentTask);
-      currentTask = nullptr;
     }
     checkStackOverflow(scheduler);
     cpu->swapContext(stackPointerToStore, scheduler->stack->pointer);
@@ -102,11 +98,9 @@ void Kernel::checkStackOverflow(Task *task) {
 
 Promise *Kernel::await(Promise *promise) {
   if (!promise->isCompleted()) {
-//    Serial::send('w');
     currentTask->block();
     scheduler->add(currentTask, promise);
     auto stackPointerToStore = (uintptr_t *)&currentTask->stack->pointer;
-    currentTask = nullptr;
     cpu->swapContext(stackPointerToStore,scheduler->stack->pointer);
   }
 

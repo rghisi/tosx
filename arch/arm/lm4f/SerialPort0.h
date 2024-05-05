@@ -1,7 +1,7 @@
 //
 // Created by ghisi on 09.11.22.
 //
-
+// send char to console etc.
 #ifndef ARM_LM4F_SERIALPORT0_H
 #define ARM_LM4F_SERIALPORT0_H
 

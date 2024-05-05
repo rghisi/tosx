@@ -30,21 +30,15 @@ void Free::reportMemory(Flag flag) {
     auto usedBlocks = scale(memoryStats->usedBlocks, flag);
     auto freeBlocks = scale(memoryStats->freeBlocks, flag);
 
-    Serial::send("S ");
-    Serial::send(size);
-    Serial::send("\n\rT ");
-    Serial::send(total);
-    Serial::send("\n\rU ");
-    Serial::send(used);
-    Serial::send("\n\rF ");
-    Serial::send(free);
-    Serial::send("\n\rTb ");
-    Serial::send(totalBlocks);
-    Serial::send("\n\rUb ");
-    Serial::send(usedBlocks);
-    Serial::send("\n\rFb ");
-    Serial::send(freeBlocks);
-    Serial::send("\n\r");
+    printf("Bytes\r\n");
+    printf(" Size:\t%lu\r\n", size);
+    printf(" Total:\t%lu\r\n", total);
+    printf(" Used:\t%lu\r\n", used);
+    printf(" Free:\t%lu\r\n", free);
+    printf("Blocks\r\n");
+    printf(" Total:\t%lu\r\n", totalBlocks);
+    printf(" Used:\t%lu\r\n", usedBlocks);
+    printf(" Free:\t%lu\r\n", freeBlocks);
 }
 
 int_fast8_t Free::run(char *args) {

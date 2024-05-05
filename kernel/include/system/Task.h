@@ -27,6 +27,8 @@ public:
 
     bool isRunning();
 
+    bool isCreated();
+
    protected:
     TaskState taskState = TaskState::CREATED;
 //    TaskStats taskStats = TaskStats();

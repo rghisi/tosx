@@ -31,6 +31,7 @@ public:
     bool isInterruptsEnabled();
 
    private:
+    IdleTask *idleTask;
     Scheduler *scheduler;
     Cpu *cpu;
     SysTicks *sysTicks;

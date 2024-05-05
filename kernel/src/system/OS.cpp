@@ -59,7 +59,6 @@ MemoryStats *OS::memoryStats() {
 }
 
 Task *OS::createTask(const char* name, int_fast8_t (*entryPoint)(char *), char *args) {
-    //switch context or allocator, then...
     auto* task = new ExecutableTask(name, entryPoint, args);
     return task;
 }

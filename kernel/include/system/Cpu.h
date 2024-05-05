@@ -13,9 +13,6 @@ public:
     virtual void enableInterrupts() = 0;
     virtual void disableInterrupts() = 0;
     virtual void setupSysTicks() = 0;
-//    virtual void switchToTask(Task *task) = 0;
-//    virtual void startKernelTask(Task *kernelTask) = 0;
-//    virtual void switchToKernel(Task* task) = 0;
     virtual void initialize(Task*) = 0;
     virtual void swapContext(uintptr_t *stackPointerToStore, uintptr_t *stackPointerToLoad) = 0;
 };

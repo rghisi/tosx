@@ -7,6 +7,16 @@
 #include "system/DoublyLinkedMemoryAllocator.h"
 #include "system/OS.h"
 
+extern "C" int _write(int handle, char *data, int size )
+{
+  int count;
+  for(count = 0; count < size; count++) {
+    Serial::send(data[count]);
+  }
+
+  return count;
+}
+
 Kernel* OS::kernel = nullptr;
 auto ma = DoublyLinkedMemoryAllocator<28672>();
 
@@ -15,22 +25,16 @@ auto serialPort0 = SerialPort0();
 auto serial = Serial(&serialPort0);
 
 Serial *Serial::self = &serial;
+auto cpu = CortexM4Cpu();
 
 int main() {
-  auto cpu = new CortexM4Cpu();
-  cpu->setup();
+  auto scheduler = Scheduler();
+  auto kernel = Kernel(&cpu, &scheduler);
+  OS::kernel = &kernel;
+  cpu.setup();
   serialPort0.setup();
-  Serial::send('1');
-  auto scheduler = new Scheduler();
-  Serial::send('2');
-  auto kernel = new Kernel(
-      cpu,
-      scheduler
-  );
-  Serial::send('3');
-  kernel->schedule(OS::createTask("shell", Shell::run, nullptr));
-  OS::kernel = kernel;
-  kernel->start();
+  kernel.schedule(OS::createTask("shell", Shell::run, nullptr));
+  kernel.start();
 
   return 0;
 }

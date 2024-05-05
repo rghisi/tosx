@@ -40,6 +40,9 @@ void Task::terminated() {
 bool Task::isRunning() {
   return taskState == TaskState::RUNNING;
 }
+bool Task::isCreated() {
+  return taskState == TaskState::CREATED;
+}
 
 //TaskStats Task::stats() {
 //    return taskStats;

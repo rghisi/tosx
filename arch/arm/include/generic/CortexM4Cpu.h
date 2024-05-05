@@ -9,6 +9,7 @@
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/cm3/systick.h>
 #include <libopencm3/lm4f/rcc.h>
+
 #include "CortexM4ContextSwitching.h"
 #include "system/Cpu.h"
 #include "system/OS.h"
@@ -18,29 +19,40 @@
 #define RCC_LED_PORT RCC_GPIOF
 #define LED_PIN GPIO1
 
-#define TRIGGER_PEND_SV *(uint32_t volatile *)0xE000ED04 = (1U << 28)
+volatile uintptr_t *stackPointerToSave asm("stackPointerToSave")
+    __attribute__((used));
+volatile uintptr_t *stackPointerToRestore asm("stackPointerToRestore")
+    __attribute__((used));
 
-volatile uintptr_t *stackPointerToSave asm("stackPointerToSave") __attribute__ ((used));
-volatile uintptr_t *stackPointerToRestore asm("stackPointerToRestore") __attribute__ ((used));
+extern "C" {
+void sys_tick_handler(void);
+void pend_sv_handler(void);
+void execTask(Task *task);
+};
 
 extern "C" void execTask(Task *task) {
   task->execute();
   OS::terminate(task);
 }
 
-class CortexM4Cpu: public Cpu {
-public:
-    void setup() override;
-    void enableInterrupts() override;
-    void disableInterrupts() override;
-    void setupSysTicks() override;
-    void initialize(Task *task) override;
-    void swapContext(uintptr_t *stackPointerToStore, uintptr_t *stackPointerToLoad) override;
-    static uint32_t preemptionPrescaler;
-  static uint32_t heartBeatPrescaler;
+class CortexM4Cpu : public Cpu {
+ public:
+  void setup() override;
+  void enableInterrupts() override;
+  void disableInterrupts() override;
+  void setupSysTicks() override;
+  void initialize(Task *task) override;
+  void swapContext(uintptr_t *stackPointerToStore,
+                   uintptr_t *stackPointerToLoad) override;
+  friend void sys_tick_handler(void);
+  friend void pend_sv_handler(void);
+
  private:
+  static uint32_t heartBeatPrescaler;
+  static uint32_t preemptionPrescaler;
   static constexpr uint32_t PLL_DIV_80MHZ = 5;
-  uintptr_t *aligned(uintptr_t *ptr);
+  static uintptr_t *alignDown(uintptr_t *ptr);
+  static void triggerPendSV();
 };
 
 void CortexM4Cpu::setup() {
@@ -57,13 +69,9 @@ void CortexM4Cpu::setup() {
   *(uint32_t volatile *)0xE000ED20 |= (0xFFU << 16);
 }
 
-void CortexM4Cpu::enableInterrupts() {
-  cm_enable_interrupts();
-}
+void CortexM4Cpu::enableInterrupts() { cm_enable_interrupts(); }
 
-void CortexM4Cpu::disableInterrupts() {
-  cm_disable_interrupts();
-}
+void CortexM4Cpu::disableInterrupts() { cm_disable_interrupts(); }
 
 void CortexM4Cpu::setupSysTicks() {
   /** Needs calibration */
@@ -77,15 +85,15 @@ uint32_t CortexM4Cpu::preemptionPrescaler = 0;
 uint32_t CortexM4Cpu::heartBeatPrescaler = 0;
 
 void CortexM4Cpu::initialize(Task *task) {
-  auto sp = aligned(task->stack->pointer);
-  *(sp--) = (1U << 24);  /* xPSR */
-  *(sp--) = (uintptr_t) execTask; /* PC */
-  *(sp--) = 0x0000000EU; /* LR  */
-  *(sp--) = 0x12121212U; /* R12 */
-  *(sp--) = 0x03030303U; /* R3  */
-  *(sp--) = 0x02020202U; /* R2  */
-  *(sp--) = 0x01010101U; /* R1  */
-  *(sp--) = (uintptr_t) task; /* R0  */
+  auto sp = alignDown(task->stack->pointer);
+  *(sp--) = (1U << 24);          /* xPSR */
+  *(sp--) = (uintptr_t)execTask; /* PC */
+  *(sp--) = 0x0000000EU;         /* LR  */
+  *(sp--) = 0x12121212U;         /* R12 */
+  *(sp--) = 0x03030303U;         /* R3  */
+  *(sp--) = 0x02020202U;         /* R2  */
+  *(sp--) = 0x01010101U;         /* R1  */
+  *(sp--) = (uintptr_t)task;     /* R0  */
   /* additionally, fake registers R4-R11 */
   *(sp--) = 0x11111111U; /* R11 */
   *(sp--) = 0x1010101AU; /* R10 */
@@ -94,45 +102,39 @@ void CortexM4Cpu::initialize(Task *task) {
   *(sp--) = 0x07070707U; /* R7 */
   *(sp--) = 0x06060606U; /* R6 */
   *(sp--) = 0x05050505U; /* R5 */
-  *(sp) = 0x04040404U; /* R4 */
+  *(sp) = 0x04040404U;   /* R4 */
   task->stack->pointer = sp;
 }
 
-void CortexM4Cpu::swapContext(
-    uintptr_t *stackPointerToStore,
-    uintptr_t *stackPointerToLoad
-    ) {
+void CortexM4Cpu::swapContext(uintptr_t *stackPointerToStore,
+                              uintptr_t *stackPointerToLoad) {
   stackPointerToSave = stackPointerToStore;
   stackPointerToRestore = stackPointerToLoad;
-  TRIGGER_PEND_SV;
+  triggerPendSV();
 }
 
-uintptr_t *CortexM4Cpu::aligned(uintptr_t *ptr) {
-  auto addr = (uintptr_t) ptr;
-  addr = (addr + 8 - 1) & ~(8 - 1);
-  return (uintptr_t*) addr;
+uintptr_t *CortexM4Cpu::alignDown(uintptr_t *ptr) {
+  auto addr = (uintptr_t)ptr;
+  addr = addr & ~7U;
+  return (uintptr_t *)addr;
 }
 
-extern "C" {
-  void sys_tick_handler(void) {
-    OS::incrementTick();
-    CortexM4Cpu::preemptionPrescaler++;
-    CortexM4Cpu::heartBeatPrescaler++;
-    if (CortexM4Cpu::heartBeatPrescaler == 250) {
-      CortexM4Cpu::heartBeatPrescaler = 0;
-      gpio_toggle(LED_PORT, LED_PIN);
-    }
-    if (CortexM4Cpu::preemptionPrescaler == 10) {
-      CortexM4Cpu::preemptionPrescaler = 0;
-      OS::preempt();
-    }
+void sys_tick_handler(void) {
+  OS::incrementTick();
+  CortexM4Cpu::preemptionPrescaler++;
+  CortexM4Cpu::heartBeatPrescaler++;
+  if (CortexM4Cpu::heartBeatPrescaler == 250) {
+    CortexM4Cpu::heartBeatPrescaler = 0;
+    gpio_toggle(LED_PORT, LED_PIN);
+  }
+  if (CortexM4Cpu::preemptionPrescaler == 10) {
+    CortexM4Cpu::preemptionPrescaler = 0;
+    OS::preempt();
   }
 }
 
-extern "C" {
-__attribute__ ((naked))
-  void pend_sv_handler(void) {
-  __asm__ volatile (
+__attribute__((naked)) void pend_sv_handler(void) {
+  __asm__ volatile(
       "CPSID   I                          \n"
       "PUSH    {r4-r11}                   \n"
       "LDR     r1,=stackPointerToSave     \n"
@@ -145,9 +147,11 @@ __attribute__ ((naked))
       "LDR     sp,[r1,#0x00]              \n"
       "POP     {r4-r11}                   \n"
       "CPSIE   I                          \n"
-      "BX      lr                         \n"
-  );
-  }
+      "BX      lr                         \n");
+}
+
+inline void CortexM4Cpu::triggerPendSV() {
+  *(uint32_t volatile *)0xE000ED04 = (1U << 28);
 }
 
 #endif  // ARM_CORTEX_M4_CPU_H

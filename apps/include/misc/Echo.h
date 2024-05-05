@@ -13,16 +13,13 @@
 class Echo {
 public:
     static int_fast8_t run(char* args);
-private:
-    static constexpr const char* NEW_LINE = "\n\r";
 };
 
 int_fast8_t Echo::run(char *args) {
     auto commandLine = new CommandLine(args);
     auto parameters = commandLine->parameters();
     delete commandLine;
-    Serial::send(parameters);
-    Serial::send(NEW_LINE);
+    printf("%s\r\n", parameters);
     delete parameters;
     return 0;
 }
