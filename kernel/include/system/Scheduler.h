@@ -56,6 +56,7 @@ public:
 
 class Scheduler: public Task {
 public:
+    Scheduler();
     void setIdleTask(Task *idleTask);
     void execute() override;
     void schedule(Task *task);
@@ -64,7 +65,7 @@ public:
 private:
     CircularQueue<Task*, 5> scheduledTasks = CircularQueue<Task*, 5>();
     CircularQueue<TaskPromise*, 5> taskPromises = CircularQueue<TaskPromise*, 5>();
-    Task* idleTask;
+    Task* idleTask{};
     void processPromises();
     void processRegularTasks();
 };

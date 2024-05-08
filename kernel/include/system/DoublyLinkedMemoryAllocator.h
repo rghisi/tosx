@@ -52,14 +52,15 @@ class DoublyLinkedMemoryAllocator : public MemoryAllocator {
 
 template <size_t S>
 size_t DoublyLinkedMemoryAllocator<S>::aligned(size_t s) {
-  return (s + 8l - 1l) & ~(8l - 1l);
+//  return (s + 4l - 1l) & ~(4l - 1l);
+  return (s + AddressSize - 1l) & ~(AddressSize - 1l);
 }
 
 template <size_t S>
 DoublyLinkedMemoryAllocator<S>::DoublyLinkedMemoryAllocator() {
   auto *memoryStartAddress = &memory[0];
   for (size_t i = 0; i < MemoryPositions; i++) {
-    memory[i] = 0x12345678;
+    memory[i] = 0x00;
   }
   this->allocationList = new (memoryStartAddress) Allocation(S - HeaderSize);
 }

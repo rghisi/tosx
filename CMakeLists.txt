@@ -10,12 +10,16 @@ add_compile_options("-I${CMAKE_SOURCE_DIR}/apps/include")
 
 if (NOT CMAKE_BUILD_TYPE STREQUAL "Tests")
     #ATMega328p (Arduino) - 2K RAM 32K FLASH
-    #include(arch/avr/atmega328p.cmake)
+#    include(arch/avr/atmega328p.cmake)
 
     #ATMega32u4 - 2.5K RAM 32K FLASH
     #include(arch/avr/atmega32u4.cmake)
 
-    include(arch/arm/lm4f.cmake)
+#TI LM4F series
+#    include(arch/arm/lm4f.cmake)
+
+    #STM32G474
+    include(arch/arm/stm32g474.cmake)
 
     include(kernel/CMakeLists.txt)
     include(apps/CMakeLists.txt)

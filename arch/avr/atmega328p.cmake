@@ -10,8 +10,8 @@ add_executable(${TARGET}
 )
 
 add_custom_target(${TARGET}-flash
-        ${AVR_DUDE_EXECUTABLE} -p ${TARGET_CPU} -carduino -b115200 -P ${AVR_DUDE_PORT} ${FLASH_VERBOSE_FLAG} -F -D -U flash:w:${PROJECT_BINARY_DIR}/${TARGET}.elf:a
-        DEPENDS ${PROJECT_NAME}
+        ${AVR_DUDE_EXECUTABLE} -p ${TARGET_CPU} -carduino -b115200 -P ${AVR_DUDE_PORT} ${FLASH_VERBOSE_FLAG} -F -D -U flash:w:${TARGET}.elf:a
+        DEPENDS ${TARGET}
         COMMENT "Flash to ${TARGET_CPU}")
 
 add_custom_command(

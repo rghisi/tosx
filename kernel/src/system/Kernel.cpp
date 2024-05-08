@@ -16,26 +16,26 @@ Kernel::Kernel(Cpu *cpu, Scheduler *scheduler) {
 }
 
 void Kernel::start() {
-  Serial::send("\n\rStarting OS\n\r");
-  Serial::send("\tWall clock: ");
+  printf("\n\rStarting OS, setting up:\n\r");
+  printf("\tWall clock\r\n");
   sysTicks = new SysTicks();
   cpu->setupSysTicks();
-  Serial::send("OK\n\r");
-  Serial::send("\tEnabling Interrupts: ");
-  cpu->enableInterrupts();
-  interruptsEnabled = true;
-  Serial::send("OK\n\r");
-  Serial::send("\tEnabling Preemption: ");
-  enablePreemption();
-  Serial::send("OK\n\r");
-  Serial::send("\tSetting up scheduler\n\r");
+  printf("\tIdle task\n\r");
   idleTask = new IdleTask();
   cpu->initialize(idleTask);
   idleTask->ready();
   scheduler->setIdleTask(idleTask);
+  printf("\tScheduler\n\r");
   cpu->initialize(scheduler);
+  printf("\tPreemption\r\n");
+  enablePreemption();
+  printf("\tInterrupts\r\n");
+  cpu->enableInterrupts();
+  interruptsEnabled = true;
+  reportMemory();
+  printf("Switching to scheduler\r\n");
   cpu->swapContext(nullptr, scheduler->stack->pointer);
-  Serial::send("\n\rPanic! Kernel Task Ended\n\r");
+  printf("\n\rPanic!\n\r");
   while (true);
 }
 
@@ -118,8 +118,9 @@ void Kernel::disablePreemption() {
 }
 
 void Kernel::sleep(uint_fast16_t ms) {
-  auto asyncSleep = await(new TimeWaitPromise(ms));
-  delete asyncSleep;
+  auto promise = new TimeWaitPromise(ms);
+  await(promise);
+  delete promise;
 }
 
 void Kernel::incrementTick() {
@@ -149,4 +150,10 @@ bool Kernel::enableInterrupts() {
 }
 bool Kernel::isInterruptsEnabled() {
   return interruptsEnabled;
+}
+void Kernel::reportMemory() {
+  auto memoryStats = OS::memoryStats();
+  auto total = memoryStats->used + memoryStats->free;
+  auto free = memoryStats->free;
+  printf("Total memory: %u, free %u\r\n", total, free);
 }

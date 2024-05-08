@@ -50,22 +50,6 @@ void Serial::send(size_t num) {
   Serial::self->usart->send(IntToHex(num >> 8));
   Serial::self->usart->send(IntToHex(num >> 4));
   Serial::self->usart->send(IntToHex(num));
-  //  auto buffer = new char[12];
-  //  itoa(num, buffer, 10);
-  //  auto len = strlen(buffer);
-  //  for (size_t i = 0; i < len; i++) {
-  //      Serial::self->usart->send(buffer[i]);
-  //  }
-  //  delete[] buffer;
-
-  //    auto buffer = new char[24];
-  //    sprintf(buffer, "%d", num);
-  //    size_t i = 0;
-  //    while (buffer[i] != 0) {
-  //        Serial::self->usart->send(buffer[i]);
-  //        i++;
-  //    }
-  //    delete[] buffer;
 }
 
 PromiseWithReturn<char> *Serial::readCharAsync() {
@@ -75,4 +59,6 @@ PromiseWithReturn<char> *Serial::readCharAsync() {
   return promise;
 }
 
-void Serial::send(char c) { Serial::self->usart->send(c); }
+void Serial::send(char c) {
+  Serial::self->usart->send(c);
+}

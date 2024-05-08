@@ -9,7 +9,9 @@
 #include "Task.h"
 
 class IdleTask: public Task {
-    void execute() override;
+ public:
+  IdleTask();
+  void execute() override;
 };
 
 

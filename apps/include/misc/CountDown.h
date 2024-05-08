@@ -5,10 +5,11 @@
 #ifndef AVR_COUNTDOWN_H
 #define AVR_COUNTDOWN_H
 
-#include "cstdint"
 #include "comms/Serial.h"
+#include "cstdint"
+#include "cstdio"
 #include "shell/CommandLine.h"
-//#include <util/delay.h>
+// #include <util/delay.h>
 
 
 class CountDown {
@@ -22,7 +23,7 @@ int_fast8_t CountDown::run(char *args) {
     delete commandLine;
     for (uint8_t c = 10; c > 0; c--) {
         printf("%c:%u\r\n", instance, c);
-        for (uintptr_t t = 0; t < 8000000; t++){
+        for (uint32_t t = 0; t < 8000000; t++){
           __asm volatile ("nop");
         }
     }

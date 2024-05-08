@@ -5,8 +5,14 @@
 #include "system/Scheduler.h"
 
 #include <memory>
+
+#include "cstdio"
 #include "system/OS.h"
 #include "system/TaskState.h"
+
+Scheduler::Scheduler() {
+  name = "Scheduler";
+}
 
 void Scheduler::schedule(Task *task) {
   scheduledTasks.push(task);
@@ -31,39 +37,37 @@ void Scheduler::processPromises() {
 
 void Scheduler::processRegularTasks() {
   if (!scheduledTasks.isEmpty()) {
-    auto *task = scheduledTasks.pop();
-    switch (task->state()) {
-      case TaskState::READY: {
-        scheduledTasks.push(task);
-        task->running();
-        OS::switchToTask(task);
-        return;
-      }
-      case TaskState::RUNNING: {
-        scheduledTasks.push(task);
-        task->ready();
-        OS::switchToTask(idleTask);
-        return;
-      }
-      case TaskState::BLOCKED: {
-        scheduledTasks.push(task);
-        OS::switchToTask(idleTask);
-        return;
-      }
-      case TaskState::TERMINATED: {
-        delete task;
-        OS::switchToTask(idleTask);
-        return;
-      }
-      default: {
-        scheduledTasks.push(task);
-        OS::switchToTask(idleTask);
-        return;
+    auto size = scheduledTasks.size();
+    for (size_t i = 0; i < size; i++) {
+      auto *task = scheduledTasks.pop();
+      switch (task->state()) {
+        case TaskState::READY: {
+          task->running();
+          scheduledTasks.push(task);
+          OS::switchToTask(task);
+          return;
+        }
+        case TaskState::RUNNING: {
+          task->ready();
+          scheduledTasks.push(task);
+          break;
+        }
+        case TaskState::BLOCKED: {
+          scheduledTasks.push(task);
+          break;
+        }
+        case TaskState::TERMINATED: {
+          delete task;
+          break;
+        }
+        default: {
+          scheduledTasks.push(task);
+          break;
+        }
       }
     }
-  } else {
-    OS::switchToTask(idleTask);
   }
+  OS::switchToTask(idleTask);
 }
 
 void Scheduler::execute() {

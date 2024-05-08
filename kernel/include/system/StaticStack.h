@@ -15,7 +15,6 @@ public:
         pointer = &stack[S - 1];
         start = &(stack[S]);
         end = &(stack[0]);
-        stack[0] = 0xAFADAFAD;
     }
     ~StaticStack() override = default;
     bool isWithinBounds() override;
@@ -30,7 +29,7 @@ private:
 
 template<size_t S>
 bool StaticStack<S>::isWithinBounds() {
-    return pointer < start && pointer > end && stack[0] == 0xAFADAFAD;
+    return pointer < start && pointer > end;
 }
 
 #endif //AVR_STATICSTACK_H

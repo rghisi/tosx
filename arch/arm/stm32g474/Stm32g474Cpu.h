@@ -2,21 +2,20 @@
 // Created by ghisi on 11.03.24.
 //
 
-#ifndef ARM_CORTEX_M4_CPU_H
-#define ARM_CORTEX_M4_CPU_H
+#ifndef ARM_STM32G474_CPU_H
+#define ARM_STM32G474_CPU_H
 
 #include <libopencm3/cm3/cortex.h>
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/cm3/systick.h>
-#include <libopencm3/lm4f/rcc.h>
+#include <libopencm3/stm32/g4/rcc.h>
 
 #include "system/Cpu.h"
 #include "system/OS.h"
 #include "system/Task.h"
 
-#define LED_PORT GPIOF
-#define RCC_LED_PORT RCC_GPIOF
-#define LED_PIN GPIO1
+#define LED_PORT GPIOA
+#define LED_PIN GPIO5
 
 volatile uintptr_t *stackPointerToSave asm("stackPointerToSave")
     __attribute__((used));
@@ -34,7 +33,7 @@ extern "C" void execTask(Task *task) {
   OS::terminate(task);
 }
 
-class CortexM4Cpu : public Cpu {
+class Stm32g474 : public Cpu {
  public:
   void setup() override;
   void enableInterrupts() override;
@@ -49,41 +48,36 @@ class CortexM4Cpu : public Cpu {
  private:
   static uint32_t heartBeatPrescaler;
   static uint32_t preemptionPrescaler;
-  static constexpr uint32_t PLL_DIV_80MHZ = 5;
   static uintptr_t *alignDown(uintptr_t *ptr);
   static void triggerPendSV();
 };
 
-void CortexM4Cpu::setup() {
-  rcc_sysclk_config(OSCSRC_MOSC, XTAL_16M, PLL_DIV_80MHZ);
-  gpio_enable_ahb_aperture();
-
-  periph_clock_enable(RCC_LED_PORT);
-  /* FIXME - may need to gpio_unlock_commit(port,pin)! */
+void Stm32g474::setup() {
+  rcc_clock_setup_pll(&rcc_hsi_configs[RCC_CLOCK_3V3_170MHZ]);
+  RCC_CRRCR |= 1;
+  rcc_periph_clock_enable(RCC_GPIOA);
   gpio_mode_setup(LED_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, LED_PIN);
-  gpio_set_output_config(LED_PORT, GPIO_OTYPE_PP, GPIO_DRIVE_2MA, LED_PIN);
-  gpio_set(LED_PORT, LED_PIN);
 
   /* set the PendSV interrupt priority to the lowest level 0xFF */
   *(uint32_t volatile *)0xE000ED20 |= (0xFFU << 16);
 }
 
-void CortexM4Cpu::enableInterrupts() { cm_enable_interrupts(); }
+void Stm32g474::enableInterrupts() { cm_enable_interrupts(); }
 
-void CortexM4Cpu::disableInterrupts() { cm_disable_interrupts(); }
+void Stm32g474::disableInterrupts() { cm_disable_interrupts(); }
 
-void CortexM4Cpu::setupSysTicks() {
+void Stm32g474::setupSysTicks() {
   /** Needs calibration */
-  systick_set_clocksource(STK_CSR_CLKSOURCE_AHB_DIV8);
-  systick_set_reload(3999);
+  systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
+  systick_set_reload(170000);
   systick_interrupt_enable();
   systick_counter_enable();
 }
 
-uint32_t CortexM4Cpu::preemptionPrescaler = 0;
-uint32_t CortexM4Cpu::heartBeatPrescaler = 0;
+uint32_t Stm32g474::preemptionPrescaler = 0;
+uint32_t Stm32g474::heartBeatPrescaler = 0;
 
-void CortexM4Cpu::initialize(Task *task) {
+void Stm32g474::initialize(Task *task) {
   auto sp = alignDown(task->stack->pointer);
   *(sp--) = (1U << 24);          /* xPSR */
   *(sp--) = (uintptr_t)execTask; /* PC */
@@ -105,14 +99,14 @@ void CortexM4Cpu::initialize(Task *task) {
   task->stack->pointer = sp;
 }
 
-void CortexM4Cpu::swapContext(uintptr_t *stackPointerToStore,
+void Stm32g474::swapContext(uintptr_t *stackPointerToStore,
                               uintptr_t *stackPointerToLoad) {
   stackPointerToSave = stackPointerToStore;
   stackPointerToRestore = stackPointerToLoad;
   triggerPendSV();
 }
 
-uintptr_t *CortexM4Cpu::alignDown(uintptr_t *ptr) {
+uintptr_t *Stm32g474::alignDown(uintptr_t *ptr) {
   auto addr = (uintptr_t)ptr;
   addr = addr & ~7U;
   return (uintptr_t *)addr;
@@ -120,14 +114,14 @@ uintptr_t *CortexM4Cpu::alignDown(uintptr_t *ptr) {
 
 void sys_tick_handler(void) {
   OS::incrementTick();
-  CortexM4Cpu::preemptionPrescaler++;
-  CortexM4Cpu::heartBeatPrescaler++;
-  if (CortexM4Cpu::heartBeatPrescaler == 250) {
-    CortexM4Cpu::heartBeatPrescaler = 0;
+  Stm32g474::preemptionPrescaler++;
+  Stm32g474::heartBeatPrescaler++;
+  if (Stm32g474::heartBeatPrescaler == 250) {
+    Stm32g474::heartBeatPrescaler = 0;
     gpio_toggle(LED_PORT, LED_PIN);
   }
-  if (CortexM4Cpu::preemptionPrescaler == 10) {
-    CortexM4Cpu::preemptionPrescaler = 0;
+  if (Stm32g474::preemptionPrescaler == 10) {
+    Stm32g474::preemptionPrescaler = 0;
     OS::preempt();
   }
 }
@@ -149,8 +143,8 @@ __attribute__((naked)) void pend_sv_handler(void) {
       "BX      lr                         \n");
 }
 
-inline void CortexM4Cpu::triggerPendSV() {
+inline void Stm32g474::triggerPendSV() {
   *(uint32_t volatile *)0xE000ED04 = (1U << 28);
 }
 
-#endif  // ARM_CORTEX_M4_CPU_H
+#endif  // ARM_STM32G474_CPU_H

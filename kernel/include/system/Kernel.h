@@ -39,6 +39,7 @@ public:
     Task* currentTask;
     bool interruptsEnabled;
     void checkStackOverflow(Task *task);
+    void reportMemory();
 };
 
 

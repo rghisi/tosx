@@ -11,3 +11,6 @@ void IdleTask::execute() {
 //      Serial::send('i');
     }
 }
+IdleTask::IdleTask() {
+  name = "Idle";
+}

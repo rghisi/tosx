@@ -1,5 +1,5 @@
 set(AVR_DUDE_EXECUTABLE /usr/bin/avrdude)
-set(AVR_DUDE_PORT /dev/ttyACM0)
+set(AVR_DUDE_PORT /dev/ttyUSB0)
 
 set(AVR_GCC_PREFIX "/opt/avr-gcc/bin" CACHE INTERNAL "")
 set(CMAKE_SYSTEM_NAME               Generic)
@@ -20,7 +20,7 @@ set(CMAKE_STRIP                     ${AVR_GCC_PREFIX}/avr-strip${CMAKE_EXECUTABL
 set(CMAKE_C_FLAGS                   "-mmcu=${TARGET_CPU} -mcall-prologues -finline-functions -fdata-sections -ffunction-sections -Wl,--print-memory-usage,--gc-sections,-u,vfprintf -lprintf_flt -lm" CACHE INTERNAL "")
 set(CMAKE_CXX_FLAGS                 "${CMAKE_C_FLAGS}" CACHE INTERNAL "")
 
-set(CMAKE_C_FLAGS_DEBUG             "-Os -g" CACHE INTERNAL "")
+set(CMAKE_C_FLAGS_DEBUG             "${CMAKE_C_FLAGS_DEBUG} -O0 -g" CACHE INTERNAL "")
 set(CMAKE_C_FLAGS_RELEASE           "-Os -DNDEBUG" CACHE INTERNAL "")
 set(CMAKE_CXX_FLAGS_DEBUG           "${CMAKE_C_FLAGS_DEBUG}" CACHE INTERNAL "")
 set(CMAKE_CXX_FLAGS_RELEASE         "${CMAKE_C_FLAGS_RELEASE}" CACHE INTERNAL "")

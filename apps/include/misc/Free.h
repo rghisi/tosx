@@ -22,13 +22,13 @@ private:
 
 void Free::reportMemory(Flag flag) {
     auto memoryStats = OS::memoryStats();
-    auto size = memoryStats->size;
-    auto total = scale(memoryStats->used + memoryStats->free, flag);
-    auto used = scale(memoryStats->used, flag);
-    auto free = scale(memoryStats->free, flag);
-    auto totalBlocks = scale(memoryStats->usedBlocks + memoryStats->freeBlocks, flag);
-    auto usedBlocks = scale(memoryStats->usedBlocks, flag);
-    auto freeBlocks = scale(memoryStats->freeBlocks, flag);
+    auto size = (uint32_t) memoryStats->size;
+    auto total = (uint32_t) scale(memoryStats->used + memoryStats->free, flag);
+    auto used = (uint32_t) scale(memoryStats->used, flag);
+    auto free = (uint32_t) scale(memoryStats->free, flag);
+    auto totalBlocks = (uint32_t) scale(memoryStats->usedBlocks + memoryStats->freeBlocks, flag);
+    auto usedBlocks = (uint32_t) scale(memoryStats->usedBlocks, flag);
+    auto freeBlocks = (uint32_t) scale(memoryStats->freeBlocks, flag);
 
     printf("Bytes\r\n");
     printf(" Size:\t%lu\r\n", size);
