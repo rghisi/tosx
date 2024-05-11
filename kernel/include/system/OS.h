@@ -34,6 +34,8 @@ public:
     static void terminate(Task *task);
     static bool disableInterupts();
     static bool enableInterupts();
+    static void enterCritical();
+    static void leaveCritical();
 };
 
 

@@ -7,10 +7,12 @@
 #include "algorithm"
 #include "misc/Clear.h"
 #include "misc/CountDown.h"
+#include "misc/CpuTest.h"
 #include "misc/Echo.h"
 #include "misc/Free.h"
 #include "misc/LongTask.h"
 #include "misc/MemTest.h"
+#include "misc/MemStatus.h"
 #include "misc/Null.h"
 #include "misc/PiTask.h"
 #include "misc/Uptime.h"
@@ -29,6 +31,8 @@ Shell::Shell() {
       new ExecutableFile("uptime", &(Uptime::run)),
       new ExecutableFile("null", &(Null::run)),
       new ExecutableFile("memtest", &(MemTest::run)),
+      new ExecutableFile("cputest", &(CpuTest::run)),
+      new ExecutableFile("memstatus", &(MemStatus::run)),
   };
   commands = {new List(this)};
 }
@@ -37,31 +41,31 @@ Shell::Shell() {
   printf("Welcome to the Shell\r\n");
   while (true) {
     if (column == FIRST && prompt) {
-      Serial::send("\x1b[1;92m#\x1b[0m ");
+      printf("\033[1;92m#\033[0m ");
       prompt = false;
     }
     auto promise = static_cast<PromiseWithReturn<char> *>(
     OS::await(Serial::readCharAsync()));
     auto character = promise->data;
     delete promise;
-    Serial::send(character);
+    printf("%c", character);
     switch (character) {
       case BACKSPACE:
         if (column > 0) {
           line[--column] = 0;
-          Serial::send(ERASE);
+          printf(ERASE);
         } else {
-          Serial::send(MOVE_ONE_RIGHT);
+          printf(MOVE_ONE_RIGHT);
         }
         break;
       case CARRIAGE_RETURN:
-        Serial::send(LINE_FEED);
+        printf("\n");
         executeLineHandler();
         resetLine();
         break;
       default:
         if (column == LAST) {
-          Serial::send(LINE_FEED);
+          printf("\n");
           resetLine();
         } else {
           line[column++] = character;
@@ -115,11 +119,12 @@ void Shell::executeLineHandler() {
       auto index = commandFound - commands.begin();
       commands[index]->run(line);
     } else {
-      Serial::send(COLOR_WHITE_BRIGHT);
-      Serial::send(commandLine->command());
-      Serial::send(COLOR_RED_BRIGHT);
-      Serial::send(" NOT FOUND\r\n");
-      Serial::send(RESET_STYLE);
+      printf("command %s%s %snot found%s\r\n",
+             COLOR_WHITE_BRIGHT,
+             commandLine->command(),
+             COLOR_RED_BRIGHT,
+             RESET_STYLE
+      );
       delete commandLine;
     }
   }

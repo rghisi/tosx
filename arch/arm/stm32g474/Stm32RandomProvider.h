@@ -14,7 +14,7 @@ class Stm32RandomProvider: public RandomProvider {
   uint8_t next() override;
   uint16_t next16() override;
   uint32_t next32() override;
-  void seed(uint8_t) override;
+  void seed(uint32_t) override;
 };
 
 Stm32RandomProvider::Stm32RandomProvider() {
@@ -38,6 +38,6 @@ uint32_t Stm32RandomProvider::next32() {
 
   return rng_get_random_blocking();
 }
-void Stm32RandomProvider::seed(uint8_t) {}
+void Stm32RandomProvider::seed(uint32_t) {}
 
 #endif  // TOSX_STM32RANDOMPROVIDER_H

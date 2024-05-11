@@ -13,7 +13,7 @@ class Shell {
 public:
     Shell();
     [[noreturn]] void run();
-    std::array<ExecutableFile*, 9> apps;
+    std::array<ExecutableFile*, 11> apps;
     std::array<ShellCommand*, 1> commands;
     static int_fast8_t run(char *args);
 private:
@@ -23,11 +23,11 @@ private:
     static constexpr char BACKSPACE = '\b';
     static constexpr char CARRIAGE_RETURN = '\r';
     static constexpr char LINE_FEED = '\n';
-    static constexpr const char* ERASE = "\x1b[J";
-    static constexpr const char* MOVE_ONE_RIGHT = "\x1b[1C";
-    static constexpr const char* COLOR_WHITE_BRIGHT = "\x1b[1;97m";
-    static constexpr const char* COLOR_RED_BRIGHT = "\x1b[1;91m";
-    static constexpr const char* RESET_STYLE = "\x1b[0m";
+    static constexpr const char* ERASE = "\033[J";
+    static constexpr const char* MOVE_ONE_RIGHT = "\033[1C";
+    static constexpr const char* COLOR_WHITE_BRIGHT = "\033[1;97m";
+    static constexpr const char* COLOR_RED_BRIGHT = "\033[1;91m";
+    static constexpr const char* RESET_STYLE = "\033[0m";
     uint_fast8_t column = 0;
     bool prompt = true;
     char line[COLUMNS] = {};

@@ -13,7 +13,7 @@ public:
     virtual void disableTransmitter() = 0;
     virtual void enableTransmitter() = 0;
     virtual void send(uint8_t byte) = 0;
-    virtual void readCharAsync(PromiseWithReturn<char> *promise) = 0;
+    virtual PromiseWithReturn<char> *readCharAsync() = 0;
 };
 
 #endif //AVR_USART_H

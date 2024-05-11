@@ -15,12 +15,24 @@
 
 extern "C" void uart0_isr(void);
 
+//class ReadCharPromise: public PromiseWithReturn<char> {
+// public:
+//  bool isCompleted() override {
+//    auto received = (LPUART1_ISR & USART_FLAG_RXNE) > 0;
+//    if (received) {
+//      this->data = usart_recv(LPUART1);
+//    }
+//
+//    return received;
+//  }
+//};
+
 class SerialPort0: public USART {
 public:
     SerialPort0();
     void setup();
     void send(uint8_t byte) override;
-    void readCharAsync(PromiseWithReturn<char> *promise) override;
+    PromiseWithReturn<char> *readCharAsync() override;
     void disableTransmitter() override;
     void enableTransmitter() override;
     friend void uart0_isr(void);
@@ -40,7 +52,6 @@ SerialPort0 *SerialPort0::it = nullptr;
 
 SerialPort0::SerialPort0() {
   SerialPort0::it = this;
-//  SerialPort0::it->enableTransmitter();
 }
 
 void SerialPort0::disableReceiver() {
@@ -59,15 +70,15 @@ void SerialPort0::send(uint8_t byte) {
   uart_send_blocking(UART0, static_cast<uint8_t>(byte));
 }
 
-void SerialPort0::readCharAsync(PromiseWithReturn<char> *promise) {
+PromiseWithReturn<char> *SerialPort0::readCharAsync() {
   if (readAsyncState == ReadAsyncState::DISCONNECTED) {
     readAsyncState = ReadAsyncState::WAITING_RECEIVE;
-    readAsyncPromise = promise;
+    readAsyncPromise = new PromiseWithReturn<char>();;
     enableReceiver();
     enableReceiveInterrupt();
-  } else {
-    promise->complete();
   }
+
+  return readAsyncPromise;
 }
 
 void SerialPort0::enableReceiveInterrupt() {
@@ -79,6 +90,7 @@ void SerialPort0::disableReceiveInterrupt() {
 }
 
 void SerialPort0::setup() {
+  SerialPort0::it = this;
   /* Enable GPIOA in run mode. */
   periph_clock_enable(RCC_GPIOA);
   /* Mux PA0 and PA1 to UART0 (alternate function 1) */

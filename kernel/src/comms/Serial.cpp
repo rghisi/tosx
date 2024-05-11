@@ -53,10 +53,7 @@ void Serial::send(size_t num) {
 }
 
 PromiseWithReturn<char> *Serial::readCharAsync() {
-  auto promise = new PromiseWithReturn<char>();
-  promise->data = 0;
-  self->usart->readCharAsync(promise);
-  return promise;
+  return self->usart->readCharAsync();
 }
 
 void Serial::send(char c) {

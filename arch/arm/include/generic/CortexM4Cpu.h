@@ -8,15 +8,10 @@
 #include <libopencm3/cm3/cortex.h>
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/cm3/systick.h>
-#include <libopencm3/lm4f/rcc.h>
 
 #include "system/Cpu.h"
 #include "system/OS.h"
 #include "system/Task.h"
-
-#define LED_PORT GPIOF
-#define RCC_LED_PORT RCC_GPIOF
-#define LED_PIN GPIO1
 
 volatile uintptr_t *stackPointerToSave asm("stackPointerToSave")
     __attribute__((used));
@@ -39,7 +34,6 @@ class CortexM4Cpu : public Cpu {
   void setup() override;
   void enableInterrupts() override;
   void disableInterrupts() override;
-  void setupSysTicks() override;
   void initialize(Task *task) override;
   void swapContext(uintptr_t *stackPointerToStore,
                    uintptr_t *stackPointerToLoad) override;
@@ -54,16 +48,11 @@ class CortexM4Cpu : public Cpu {
   static void triggerPendSV();
 };
 
+uint32_t CortexM4Cpu::preemptionPrescaler = 0;
+uint32_t CortexM4Cpu::heartBeatPrescaler = 0;
+
+
 void CortexM4Cpu::setup() {
-  rcc_sysclk_config(OSCSRC_MOSC, XTAL_16M, PLL_DIV_80MHZ);
-  gpio_enable_ahb_aperture();
-
-  periph_clock_enable(RCC_LED_PORT);
-  /* FIXME - may need to gpio_unlock_commit(port,pin)! */
-  gpio_mode_setup(LED_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, LED_PIN);
-  gpio_set_output_config(LED_PORT, GPIO_OTYPE_PP, GPIO_DRIVE_2MA, LED_PIN);
-  gpio_set(LED_PORT, LED_PIN);
-
   /* set the PendSV interrupt priority to the lowest level 0xFF */
   *(uint32_t volatile *)0xE000ED20 |= (0xFFU << 16);
 }
@@ -71,17 +60,6 @@ void CortexM4Cpu::setup() {
 void CortexM4Cpu::enableInterrupts() { cm_enable_interrupts(); }
 
 void CortexM4Cpu::disableInterrupts() { cm_disable_interrupts(); }
-
-void CortexM4Cpu::setupSysTicks() {
-  /** Needs calibration */
-  systick_set_clocksource(STK_CSR_CLKSOURCE_AHB_DIV8);
-  systick_set_reload(3999);
-  systick_interrupt_enable();
-  systick_counter_enable();
-}
-
-uint32_t CortexM4Cpu::preemptionPrescaler = 0;
-uint32_t CortexM4Cpu::heartBeatPrescaler = 0;
 
 void CortexM4Cpu::initialize(Task *task) {
   auto sp = alignDown(task->stack->pointer);
@@ -122,10 +100,6 @@ void sys_tick_handler(void) {
   OS::incrementTick();
   CortexM4Cpu::preemptionPrescaler++;
   CortexM4Cpu::heartBeatPrescaler++;
-  if (CortexM4Cpu::heartBeatPrescaler == 250) {
-    CortexM4Cpu::heartBeatPrescaler = 0;
-    gpio_toggle(LED_PORT, LED_PIN);
-  }
   if (CortexM4Cpu::preemptionPrescaler == 10) {
     CortexM4Cpu::preemptionPrescaler = 0;
     OS::preempt();

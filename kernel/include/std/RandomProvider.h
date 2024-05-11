@@ -12,7 +12,7 @@ class RandomProvider {
   virtual uint8_t next() = 0;
   virtual uint16_t next16() = 0;
   virtual uint32_t next32() = 0;
-  virtual void seed(uint8_t) = 0;
+  virtual void seed(uint32_t) = 0;
 };
 
 /*class NullRandomProvider : public RandomProvider {

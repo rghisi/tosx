@@ -7,7 +7,7 @@
 #include "system/StaticStack.h"
 
 Task::Task() {
-    this->stack = new StaticStack<128>();
+    this->stack = new StaticStack<192>();
 }
 
 Task::~Task() {
@@ -34,14 +34,25 @@ TaskState Task::state() {
 void Task::ready() {
     taskState = TaskState::READY;
 }
+
 void Task::terminated() {
   taskState = TaskState::TERMINATED;
 }
+
 bool Task::isRunning() {
   return taskState == TaskState::RUNNING;
 }
+
 bool Task::isCreated() {
   return taskState == TaskState::CREATED;
+}
+
+bool Task::isTerminated() {
+  return taskState == TaskState::TERMINATED;
+}
+
+bool Task::isBlocked() {
+  return taskState == TaskState::BLOCKED;
 }
 
 //TaskStats Task::stats() {

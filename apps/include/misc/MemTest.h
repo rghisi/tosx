@@ -10,30 +10,39 @@ class MemTest {
  public:
   static int_fast8_t run(char* args);
   static int_fast8_t staticTest(size_t freeMemory);
-  static int_fast8_t stressTest(size_t freeMemory);
+  static int_fast8_t stressTest(size_t i);
 };
 
 int_fast8_t MemTest::run(char *args) {
-  auto freeMemory = OS::memoryStats()->free - 64;
-  return stressTest(freeMemory);
+  size_t limit = OS::memoryStats()->free >> 1;
+  return stressTest(limit);
 }
 
-int_fast8_t MemTest::stressTest(size_t freeMemory) {
-  auto available = freeMemory - 128;
-  auto iterations = 10000000;
+int_fast8_t MemTest::stressTest(size_t limit) {
+  auto iterations = 10000000u;
+  auto timestamp = OS::now();
+  auto bytesWritten = 0u;
+  auto bytesPerSecond = 0u;
   for (auto iteration = 0; iteration < iterations; iteration++) {
-    printf("%d:", iteration);
-    auto random = Random::next16();
-    while (random >= available) {
+    auto random = (uint32_t) Random::next16();
+    while (random >= limit) {
       random = Random::next16();
     }
-    printf("%u ", random);
     auto *array = new uint8_t[random];
     for (auto i = 0; i < random; i++) {
-      array[i] = Random::next();
+      array[i] = (uint8_t) i;
     }
     delete[] array;
-    printf("\r\n");
+
+    bytesWritten += random;
+    auto now = OS::now();
+    auto timeDelta = now - timestamp;
+    if (timeDelta >= 1000) {
+      bytesPerSecond = bytesWritten / timeDelta * 1000;
+      bytesWritten = 0;
+      timestamp = now;
+      printf("%04lu %06d: %010uB/s\r", timeDelta, iteration, bytesPerSecond);
+    }
   }
 
   return 0;

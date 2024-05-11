@@ -22,7 +22,7 @@ TaskCompletionPromise::TaskCompletionPromise(Task *task) {
 }
 
 bool TaskCompletionPromise::isCompleted() {
-    return task->state() == TaskState::TERMINATED;
+    return task->isTerminated();
 }
 
 #endif //AVR_TASKCOMPLETIONPROMISE_H

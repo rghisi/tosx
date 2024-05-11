@@ -19,7 +19,6 @@ extern "C" int _write(int handle, char *data, int size )
   return count;
 }
 
-Kernel* OS::kernel = nullptr;
 auto ma = DoublyLinkedMemoryAllocator<129024>();
 
 MemoryAllocator *OS::memoryAllocator = &ma;
@@ -30,6 +29,7 @@ Serial *Serial::self = &serial;
 auto cpu = Stm32g474();
 
 int main() {
+  setbuf(stdout, NULL);
   cpu.setup();
   serialPort0.setup();
   Random::setup(new Stm32RandomProvider());

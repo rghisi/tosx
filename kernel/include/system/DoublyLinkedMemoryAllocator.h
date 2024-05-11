@@ -42,8 +42,7 @@ class DoublyLinkedMemoryAllocator : public MemoryAllocator {
   Allocation *allocationList = nullptr;
   MemoryStats memoryStats = MemoryStats();
   uintptr_t memory[MemoryPositions] = {};
-  uintptr_t max = (uintptr_t)&memory[MemoryPositions - 1];
-  uintptr_t min = (uintptr_t)&memory[0];
+
 
   Allocation *merge(Allocation *left, Allocation *right);
   [[nodiscard]] Allocation *findBestAllocation(size_t size) const;
@@ -63,19 +62,20 @@ DoublyLinkedMemoryAllocator<S>::DoublyLinkedMemoryAllocator() {
     memory[i] = 0x00;
   }
   this->allocationList = new (memoryStartAddress) Allocation(S - HeaderSize);
+  memoryStats.size = S;
+  memoryStats.used = HeaderSize;
+  memoryStats.free = S - HeaderSize;
+  memoryStats.usedBlocks = 0;
+  memoryStats.freeBlocks = 1;
 }
 
 template <size_t S>
 uintptr_t *DoublyLinkedMemoryAllocator<S>::allocate(size_t requestedBytes) {
-  auto interruptsWereDisabled = OS::disableInterupts();
   const auto totalBytesRequired = aligned(requestedBytes + HeaderSize);
 
   auto *allocation = findBestAllocation(totalBytesRequired);
 
   if (allocation == nullptr) {
-    if (interruptsWereDisabled) {
-      OS::enableInterupts();
-    }
     return nullptr;
   }
 
@@ -97,10 +97,13 @@ uintptr_t *DoublyLinkedMemoryAllocator<S>::allocate(size_t requestedBytes) {
     freeBlock->next = allocation->next;
     freeBlock->previous = allocation;
     allocation->next = freeBlock;
+  } else {
+    memoryStats.freeBlocks--;
   }
-  if (interruptsWereDisabled) {
-    OS::enableInterupts();
-  }
+
+  memoryStats.used += allocation->size;
+  memoryStats.free -= allocation->size;
+  memoryStats.usedBlocks++;
 
   return currentAllocationDataAddress;
 }
@@ -128,25 +131,25 @@ void DoublyLinkedMemoryAllocator<S>::free(void *ptr) {
   if (ptr == nullptr) {
     return;
   }
-  auto interruptsWereDisabled = OS::disableInterupts();
   auto *dataPointerAddress = (uintptr_t *)ptr;
   auto *allocationAddress = dataPointerAddress - (HeaderSize >> BytesToWordShift);
   auto allocation = (Allocation *)(allocationAddress);
 
   if (allocation->flags == AllocationFlags::USED) {
     allocation->flags = AllocationFlags::FREE;
+    memoryStats.used -= allocation->size;
+    memoryStats.free += allocation->size;
+    memoryStats.usedBlocks--;
+    memoryStats.freeBlocks++;
+//    while (allocation->previous != nullptr && allocation->previous->isFree()) {
+//      allocation = merge(allocation->previous, allocation);
+//      memoryStats.freeBlocks--;
+//    }
 
-    if (allocation->previous != nullptr && allocation->previous->isFree()) {
-      allocation = merge(allocation->previous, allocation);
+    while (allocation->next != nullptr && allocation->next->isFree()) {
+      merge(allocation, allocation->next);
+      memoryStats.freeBlocks--;
     }
-
-    if (allocation->next != nullptr && allocation->next->isFree()) {
-      allocation = merge(allocation, allocation->next);
-    }
-  }
-
-  if (interruptsWereDisabled) {
-    OS::enableInterupts();
   }
 }
 
@@ -164,24 +167,6 @@ Allocation *DoublyLinkedMemoryAllocator<S>::merge(Allocation *left,
 
 template <size_t S>
 MemoryStats *DoublyLinkedMemoryAllocator<S>::stats() {
-  memoryStats.size = S;
-  memoryStats.used = 0;
-  memoryStats.free = 0;
-  memoryStats.freeBlocks = 0;
-  memoryStats.usedBlocks = 0;
-  auto *allocation = allocationList;
-  while (allocation != nullptr) {
-    if (allocation->isFree()) {
-      memoryStats.freeBlocks++;
-      memoryStats.free += allocation->size;
-    } else {
-      memoryStats.usedBlocks++;
-      memoryStats.used += allocation->size;
-    }
-    allocation = allocation->next;
-  }
-  memoryStats.delta = S - (memoryStats.used + memoryStats.free);
-
   return &this->memoryStats;
 }
 

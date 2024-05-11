@@ -5,6 +5,8 @@ target_sources(${TARGET} INTERFACE
         apps/include/misc/Free.h
         apps/include/misc/LongTask.h
         apps/include/misc/MemTest.h
+        apps/include/misc/CpuTest.h
+        apps/include/misc/MemStatus.h
         apps/include/misc/Null.h
         apps/include/misc/PiTask.h
         apps/include/shell/CommandLine.h

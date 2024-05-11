@@ -15,11 +15,11 @@ if (NOT CMAKE_BUILD_TYPE STREQUAL "Tests")
     #ATMega32u4 - 2.5K RAM 32K FLASH
     #include(arch/avr/atmega32u4.cmake)
 
-#TI LM4F series
-#    include(arch/arm/lm4f.cmake)
+    #TI LM4F series
+    include(arch/arm/lm4f.cmake)
 
     #STM32G474
-    include(arch/arm/stm32g474.cmake)
+#    include(arch/arm/stm32g474.cmake)
 
     include(kernel/CMakeLists.txt)
     include(apps/CMakeLists.txt)
