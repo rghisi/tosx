@@ -2,62 +2,81 @@
 // Created by ghisi on 13.10.22.
 //
 
-#include "cstdio"
-#include "cstring"
 #include "system/Scheduler.h"
-#include "system/TaskState.h"
+
+#include <memory>
+
+#include "cstdio"
 #include "system/OS.h"
+#include "system/TaskState.h"
+
+Scheduler::Scheduler() {
+  name = "Scheduler";
+}
 
 void Scheduler::schedule(Task *task) {
-    scheduledTasks->push(task);
+  scheduledTasks.push(task);
 }
 
 void Scheduler::add(Task *task, Promise *promise) {
-    taskPromises->push(new TaskPromise(task, promise));
+  taskPromises.push(new TaskPromise(task, promise));
 }
 
 void Scheduler::processPromises() {
-    auto promises = taskPromises->size();
-    for (size_t i = 0; i < promises; i++) {
-        auto taskPromise = taskPromises->pop();
-        if (taskPromise->promise->isCompleted()) {
-            taskPromise->task->waiting();
-            delete taskPromise;
-        } else {
-            taskPromises->push(taskPromise);
-        }
+  auto promises = taskPromises.size();
+  for (size_t i = 0; i < promises; i++) {
+    auto taskPromise = taskPromises.pop();
+    if (taskPromise->promise->isCompleted()) {
+      taskPromise->task->ready();
+      delete taskPromise;
+    } else {
+      taskPromises.push(taskPromise);
     }
+  }
 }
 
 void Scheduler::processRegularTasks() {
-    if (!scheduledTasks->isEmpty()) {
-        auto *task = scheduledTasks->pop();
-        switch (task->state()) {
-            case TaskState::CREATED: {
-                scheduledTasks->push(task);
-                OS::switchToTask(task);
-            }
-            case TaskState::WAITING: {
-                scheduledTasks->push(task);
-                OS::switchToTask(task);
-            }
-            case TaskState::RUNNING: {
-                scheduledTasks->push(task);
-                OS::switchToTask(idleTask);
-            }
-            case TaskState::BLOCKED: {
-                scheduledTasks->push(task);
-                OS::switchToTask(idleTask);
-            }
-            case TaskState::TERMINATED: {
-                delete task;
-                OS::switchToTask(idleTask);
-            }
+  if (!scheduledTasks.isEmpty()) {
+    auto size = scheduledTasks.size();
+    for (size_t i = 0; i < size; i++) {
+      auto *task = scheduledTasks.pop();
+      switch (task->state()) {
+        case TaskState::READY: {
+          task->running();
+          scheduledTasks.push(task);
+          OS::switchToTask(task);
+          return;
         }
+        case TaskState::RUNNING: {
+          task->ready();
+          scheduledTasks.push(task);
+          break;
+        }
+        case TaskState::BLOCKED: {
+          scheduledTasks.push(task);
+          break;
+        }
+        case TaskState::TERMINATED: {
+          delete task;
+          break;
+        }
+        default: {
+          scheduledTasks.push(task);
+          break;
+        }
+      }
     }
+  }
+  OS::switchToTask(idleTask);
 }
 
 void Scheduler::execute() {
+  while (true) {
     processPromises();
     processRegularTasks();
+  }
+}
+
+void Scheduler::setIdleTask(Task *idleTask) {
+  this->idleTask = idleTask;
 }

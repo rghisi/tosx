@@ -12,21 +12,20 @@ template <size_t S>
 class StaticStack: public Stack {
 public:
     StaticStack() {
-        stack = new uintptr_t[S];
-        pointer = reinterpret_cast<volatile uintptr_t>(&stack[S - 1]);
-        start = reinterpret_cast<volatile uintptr_t>(&(stack[S]));
-        end = reinterpret_cast<volatile uintptr_t>(&(stack[0]));
+        pointer = &stack[S - 1];
+        start = &(stack[S]);
+        end = &(stack[0]);
     }
-    ~StaticStack() override;
+    ~StaticStack() override = default;
     bool isWithinBounds() override;
 private:
-    volatile uintptr_t *stack;
+    uintptr_t stack[S] = {};
 };
 
-template<size_t S>
-StaticStack<S>::~StaticStack() {
-    delete[] stack;
-}
+//template<size_t S>
+//StaticStack<S>::~StaticStack() {
+////    delete stack;
+//}
 
 template<size_t S>
 bool StaticStack<S>::isWithinBounds() {

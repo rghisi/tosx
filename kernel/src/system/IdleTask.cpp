@@ -4,7 +4,13 @@
 
 #include "system/IdleTask.h"
 
+#include "comms/Serial.h"
+
 void IdleTask::execute() {
     while (true) {
+//      Serial::send('i');
     }
+}
+IdleTask::IdleTask() {
+  name = "Idle";
 }

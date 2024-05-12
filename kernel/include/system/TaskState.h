@@ -8,7 +8,8 @@
 #include <cstdint>
 
 enum class TaskState: uint_fast8_t {
-    CREATED, WAITING, RUNNING, BLOCKED, TERMINATED
+    CREATED,
+  READY, RUNNING, BLOCKED, TERMINATED
 };
 
 #endif //AVR_TASKSTATE_H

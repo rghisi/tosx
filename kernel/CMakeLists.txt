@@ -1,4 +1,4 @@
-target_sources(${PROJECT_NAME} INTERFACE
+target_sources(${TARGET} INTERFACE
         ${CMAKE_CURRENT_LIST_DIR}/include/comms/Serial.h
         ${CMAKE_CURRENT_LIST_DIR}/include/comms/USART.h
         ${CMAKE_CURRENT_LIST_DIR}/include/console/CommandLine.h
@@ -15,6 +15,7 @@ target_sources(${PROJECT_NAME} INTERFACE
         ${CMAKE_CURRENT_LIST_DIR}/include/setup/C.h
         ${CMAKE_CURRENT_LIST_DIR}/include/setup/Cpp.h
         ${CMAKE_CURRENT_LIST_DIR}/include/std/Random.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/std/RandomProvider.h
         ${CMAKE_CURRENT_LIST_DIR}/include/std/String.h
         ${CMAKE_CURRENT_LIST_DIR}/include/system/Cpu.h
         ${CMAKE_CURRENT_LIST_DIR}/include/system/DoublyLinkedMemoryAllocator.h
@@ -39,7 +40,7 @@ target_sources(${PROJECT_NAME} INTERFACE
         ${CMAKE_CURRENT_LIST_DIR}/include/system/TimeWaitPromise.h
 )
 
-target_sources(${PROJECT_NAME} PUBLIC
+target_sources(${TARGET} PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/src/comms/Serial.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/std/Random.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/system/IdleTask.cpp

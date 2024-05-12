@@ -15,7 +15,6 @@ public:
     size_t free;
     size_t usedBlocks;
     size_t freeBlocks;
-    size_t delta;
 };
 
 class MemoryAllocator {
