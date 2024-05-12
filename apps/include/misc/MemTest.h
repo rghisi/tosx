@@ -14,7 +14,7 @@ class MemTest {
 };
 
 int_fast8_t MemTest::run(char *args) {
-  size_t limit = OS::memoryStats()->free >> 1;
+  size_t limit = (OS::memoryStats()->free / 3) * 2;
   return stressTest(limit);
 }
 

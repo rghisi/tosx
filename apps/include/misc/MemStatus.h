@@ -16,10 +16,17 @@ class MemStatus {
 
 void MemStatus::reportMemory() {
   auto memoryStats = OS::memoryStats();
-  printf("\033[s\033[H\033[2K\033[1;41m  T %06u  U %06u  F %06u    \033[u\033[0m",
+  auto totalSeconds = OS::now() / 1000;
+  auto hours = (totalSeconds / 3600);
+  auto minutes = (totalSeconds - (3600 * hours)) / 60;
+  auto seconds = (totalSeconds - (3600 * hours) - (minutes * 60));
+  printf("\033[s\033[H\033[2K\033[1;41m  T %06u  U %06u  F %06u  %02lu:%02lu:%02lu \033[u\033[0m",
          memoryStats->size,
          memoryStats->used,
-         memoryStats->free
+         memoryStats->free,
+         hours,
+         minutes,
+         seconds
  );
 }
 

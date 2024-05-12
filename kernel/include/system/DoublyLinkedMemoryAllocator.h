@@ -51,7 +51,6 @@ class DoublyLinkedMemoryAllocator : public MemoryAllocator {
 
 template <size_t S>
 size_t DoublyLinkedMemoryAllocator<S>::aligned(size_t s) {
-//  return (s + 4l - 1l) & ~(4l - 1l);
   return (s + AddressSize - 1l) & ~(AddressSize - 1l);
 }
 

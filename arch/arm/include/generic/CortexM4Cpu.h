@@ -41,7 +41,6 @@ class CortexM4Cpu : public Cpu {
   friend void pend_sv_handler(void);
 
  private:
-  static uint32_t heartBeatPrescaler;
   static uint32_t preemptionPrescaler;
   static constexpr uint32_t PLL_DIV_80MHZ = 5;
   static uintptr_t *alignDown(uintptr_t *ptr);
@@ -49,7 +48,6 @@ class CortexM4Cpu : public Cpu {
 };
 
 uint32_t CortexM4Cpu::preemptionPrescaler = 0;
-uint32_t CortexM4Cpu::heartBeatPrescaler = 0;
 
 
 void CortexM4Cpu::setup() {
@@ -99,7 +97,6 @@ uintptr_t *CortexM4Cpu::alignDown(uintptr_t *ptr) {
 void sys_tick_handler(void) {
   OS::incrementTick();
   CortexM4Cpu::preemptionPrescaler++;
-  CortexM4Cpu::heartBeatPrescaler++;
   if (CortexM4Cpu::preemptionPrescaler == 10) {
     CortexM4Cpu::preemptionPrescaler = 0;
     OS::preempt();

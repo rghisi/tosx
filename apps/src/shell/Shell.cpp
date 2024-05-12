@@ -11,10 +11,11 @@
 #include "misc/Echo.h"
 #include "misc/Free.h"
 #include "misc/LongTask.h"
-#include "misc/MemTest.h"
 #include "misc/MemStatus.h"
+#include "misc/MemTest.h"
 #include "misc/Null.h"
 #include "misc/PiTask.h"
+#include "misc/RandomTest.h"
 #include "misc/Uptime.h"
 #include "shell/commands/List.h"
 #include "system/OS.h"
@@ -33,6 +34,7 @@ Shell::Shell() {
       new ExecutableFile("memtest", &(MemTest::run)),
       new ExecutableFile("cputest", &(CpuTest::run)),
       new ExecutableFile("memstatus", &(MemStatus::run)),
+      new ExecutableFile("random", &(RandomTest::run))
   };
   commands = {new List(this)};
 }
@@ -44,8 +46,7 @@ Shell::Shell() {
       printf("\033[1;92m#\033[0m ");
       prompt = false;
     }
-    auto promise = static_cast<PromiseWithReturn<char> *>(
-    OS::await(Serial::readCharAsync()));
+    auto promise = static_cast<PromiseWithReturn<char> *>(OS::await(Serial::readCharAsync()));
     auto character = promise->data;
     delete promise;
     printf("%c", character);

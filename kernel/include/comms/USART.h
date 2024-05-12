@@ -10,8 +10,6 @@
 
 class USART {
 public:
-    virtual void disableTransmitter() = 0;
-    virtual void enableTransmitter() = 0;
     virtual void send(uint8_t byte) = 0;
     virtual PromiseWithReturn<char> *readCharAsync() = 0;
 };

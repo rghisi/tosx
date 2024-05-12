@@ -12,6 +12,7 @@
 class TaskCompletionPromise: public Promise {
 public:
     explicit TaskCompletionPromise(Task *task);
+    ~TaskCompletionPromise() override;
     [[nodiscard]] bool isCompleted() override;
 private:
     Task *task;
@@ -23,6 +24,10 @@ TaskCompletionPromise::TaskCompletionPromise(Task *task) {
 
 bool TaskCompletionPromise::isCompleted() {
     return task->isTerminated();
+}
+
+TaskCompletionPromise::~TaskCompletionPromise() {
+
 }
 
 #endif //AVR_TASKCOMPLETIONPROMISE_H

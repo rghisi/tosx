@@ -6,11 +6,11 @@
 #define ARM_LM4F_SERIALPORT0_H
 
 #include "cstdint"
-#include "vector"
+//#include "vector"
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/usart.h>
-#include <libopencm3/stm32/g4/nvic.h>
+//#include <libopencm3/stm32/g4/nvic.h>
 #include "comms/USART.h"
 
 //extern "C" void lpuart_isr(void);
@@ -29,24 +29,13 @@ class ReadCharPromise: public PromiseWithReturn<char> {
 
 class SerialPort0: public USART {
 public:
-    SerialPort0();
     void setup();
     void send(uint8_t byte) override;
     PromiseWithReturn<char> *readCharAsync() override;
-    void disableTransmitter() override;
-    void enableTransmitter() override;
 };
 
-SerialPort0::SerialPort0() = default;
-
-void SerialPort0::disableTransmitter() {
-}
-
-void SerialPort0::enableTransmitter() {
-}
-
 void SerialPort0::send(uint8_t byte) {
-  usart_send_blocking(LPUART1_BASE, static_cast<uint8_t>(byte));
+  usart_send_blocking(LPUART1_BASE, byte);
 }
 
 PromiseWithReturn<char> *SerialPort0::readCharAsync() {
@@ -58,7 +47,6 @@ PromiseWithReturn<char> *SerialPort0::readCharAsync() {
 }
 
 void SerialPort0::setup() {
-  nvic_enable_irq(NVIC_LPUART_IRQ);
   rcc_periph_clock_enable(RCC_GPIOA);
   rcc_periph_clock_enable(RCC_LPUART1);
   gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO2);
