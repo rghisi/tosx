@@ -1,8 +1,6 @@
 //
 // Created by ghisi on 10.09.22.
 //
-#include "misc/RandomTest.h"
-
 #include "std/Random.h"
 
 Random *Random::instance = nullptr;

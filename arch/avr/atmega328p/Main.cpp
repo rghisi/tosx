@@ -5,6 +5,8 @@
 #include "cstdio"
 #include "generic/AVRCpu.h"
 #include "shell/Shell.h"
+#include "std/Random.h"
+#include "std/SoftwareRandomProvider.h"
 #include "system/DoublyLinkedMemoryAllocator.h"
 #include "system/OS.h"
 
@@ -32,8 +34,7 @@ int uart_putchar(char c, FILE *stream) {
   return 0;
 }
 
-Kernel *OS::kernel = nullptr;
-auto ma = DoublyLinkedMemoryAllocator<1024>();
+auto ma = DoublyLinkedMemoryAllocator<512>();
 
 MemoryAllocator *OS::memoryAllocator = &ma;
 auto serialPort0 = SerialPort0();
@@ -44,10 +45,12 @@ auto cpu = AVRCpu();
 
 int main() {
   stdout = &mystdout;
+  cpu.setup();
+  serialPort0.setup();
+  Random::setup(new SoftwareRandomProvider());
   auto scheduler = Scheduler();
   auto kernel = Kernel(&cpu, &scheduler);
   OS::kernel = &kernel;
-//  serialPort0.setup();
   kernel.schedule(OS::createTask("shell", Shell::run, nullptr));
   kernel.start();
 

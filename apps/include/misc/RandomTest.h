@@ -7,6 +7,9 @@
 
 #include <cstdint>
 
+#include "cstdio"
+#include "std/Random.h"
+
 class RandomTest {
  public:
   static int_fast8_t run(char* args);

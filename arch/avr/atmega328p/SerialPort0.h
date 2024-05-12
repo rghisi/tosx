@@ -6,7 +6,6 @@
 #define AVR_SERIALPORT0_H
 
 #include "cstdint"
-#include "vector"
 #include <avr/interrupt.h>
 #include "comms/USART.h"
 
@@ -14,11 +13,9 @@ extern "C" void USART_RX_vect(void) __attribute__ ((signal));
 
 class SerialPort0: public USART {
 public:
-    SerialPort0();
+    void setup();
     void send(uint8_t byte) override;
-    void readCharAsync(PromiseWithReturn<char> *promise) override;
-    void disableTransmitter() override;
-    void enableTransmitter() override;
+    PromiseWithReturn<char> *readCharAsync() override;
     friend void USART_RX_vect(void);
 
 private:
@@ -34,11 +31,11 @@ private:
 
 SerialPort0 *SerialPort0::it = nullptr;
 
-SerialPort0::SerialPort0() {
+void SerialPort0::setup() {
   UCSR0C = (_BV(UCSZ01)) | (_BV(UCSZ00));
   UBRR0 = 0; //1mbps
+  UCSR0B |= _BV(TXEN0);
   SerialPort0::it = this;
-  SerialPort0::it->enableTransmitter();
 }
 
 void SerialPort0::disableReceiver() {
@@ -49,28 +46,20 @@ void SerialPort0::enableReceiver() {
   UCSR0B |= _BV(RXEN0);
 }
 
-void SerialPort0::disableTransmitter() {
-  UCSR0B &= ~(_BV(TXEN0));
-}
-
-void SerialPort0::enableTransmitter() {
-  UCSR0B |= _BV(TXEN0);
-}
-
 void SerialPort0::send(uint8_t byte) {
   while (!(UCSR0A & (1<<UDRE0)));
   UDR0 = byte;
 }
 
-void SerialPort0::readCharAsync(PromiseWithReturn<char> *promise) {
+PromiseWithReturn<char> *SerialPort0::readCharAsync() {
   if (readAsyncState == ReadAsyncState::DISCONNECTED) {
     readAsyncState = ReadAsyncState::WAITING_RECEIVE;
-    readAsyncPromise = promise;
+    readAsyncPromise = new PromiseWithReturn<char>();
     enableReceiver();
     enableReceiveInterrupt();
-  } else {
-    promise->complete();
   }
+
+  return readAsyncPromise;
 }
 
 void SerialPort0::enableReceiveInterrupt() {

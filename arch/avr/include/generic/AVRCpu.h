@@ -43,7 +43,6 @@ void AVRCpu::enableInterrupts() { sei(); }
 void AVRCpu::disableInterrupts() { cli(); }
 
 void AVRCpu::setupSysTicks() {
-  size_t a = 10;
   TCCR0A = _BV(WGM01);
   TCCR0B = _BV(CS01) | _BV(CS00);
   TCNT0 = 0;
@@ -111,7 +110,7 @@ extern "C" {
 void TIMER0_COMPA_vect(void) {
   OS::incrementTick();
   AVRCpu::acc++;
-  if (AVRCpu::acc == 10) {
+  if (AVRCpu::acc == 100) {
     AVRCpu::acc = 0;
     OS::preempt();
   }
