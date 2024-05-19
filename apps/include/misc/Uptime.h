@@ -16,12 +16,7 @@ public:
         auto hours = (totalSeconds / 3600);
         auto minutes = (totalSeconds - (3600 * hours)) / 60;
         auto seconds = (totalSeconds - (3600 * hours) - (minutes * 60));
-        Serial::send(static_cast<size_t>(hours));
-        Serial::send(":");
-        Serial::send(static_cast<size_t>(minutes));
-        Serial::send(":");
-        Serial::send(static_cast<size_t>(seconds));
-        Serial::send("\n\r");
+        printf("%02lu:%02lu:%02lu\r\n", hours, minutes, seconds);
         return 0;
     }
 };

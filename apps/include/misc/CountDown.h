@@ -5,17 +5,16 @@
 #ifndef AVR_COUNTDOWN_H
 #define AVR_COUNTDOWN_H
 
-#include "cstdint"
 #include "comms/Serial.h"
+#include "cstdint"
+#include "cstdio"
 #include "shell/CommandLine.h"
-//#include <util/delay.h>
+// #include <util/delay.h>
 
 
 class CountDown {
 public:
     static int_fast8_t run(char* args);
-private:
-    static constexpr const char* NEW_LINE = "\n\r";
 };
 
 int_fast8_t CountDown::run(char *args) {
@@ -23,14 +22,12 @@ int_fast8_t CountDown::run(char *args) {
     auto instance = commandLine->parameter(0)[0];
     delete commandLine;
     for (uint8_t c = 10; c > 0; c--) {
-        Serial::send(instance);
-        Serial::send((size_t)c);
-        Serial::send(NEW_LINE);
-//        _delay_ms(500);
+        printf("%c:%u\r\n", instance, c);
+        for (uint32_t t = 0; t < 8000000; t++){
+          __asm volatile ("nop");
+        }
     }
-    Serial::send("End of ");
-    Serial::send(instance);
-    Serial::send(NEW_LINE);
+    printf("End of %c\r\n", instance);
     return 0;
 }
 

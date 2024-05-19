@@ -13,6 +13,15 @@ extern "C" {
         return OS::memalloc(size);
     }
 
+    void *calloc(size_t size, size_t n) {
+      return OS::memalloc(size * n);
+    }
+
+    void *realloc(void *ptr, size_t newsize) {
+      OS::memfree(ptr);
+      return OS::memalloc(newsize);
+    }
+
     void free(void *ptr) {
         OS::memfree(ptr);
     }

@@ -9,7 +9,6 @@
 #include <cstdio>
 #include "comms/Serial.h"
 #include "system/Task.h"
-#include "system/StaticStack.h"
 #include "system/OS.h"
 
 class LongTask {
@@ -18,9 +17,9 @@ public:
 };
 
 int_fast8_t LongTask::run(char *args) {
-    Serial::send("Starting a long task that will take 10s to run...\n\r");
+    printf("Starting a long task that will take 10s to run...\r\n");
     OS::sleep(10000);
-    Serial::send("Long Task terminated.\r\n");
+    printf("Long Task terminated.\r\n");
 
     return 0;
 }

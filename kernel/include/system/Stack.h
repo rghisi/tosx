@@ -12,9 +12,9 @@ class Stack {
 public:
     virtual ~Stack() = default;
     virtual bool isWithinBounds() = 0;
-    volatile uintptr_t pointer = 0;
-    volatile uintptr_t start = 0;
-    volatile uintptr_t end = 0;
+    uintptr_t *pointer = 0;
+    uintptr_t *start = 0;
+    uintptr_t *end = 0;
 };
 
 #endif //AVR_STACK_H

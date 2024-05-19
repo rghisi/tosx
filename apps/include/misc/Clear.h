@@ -12,7 +12,6 @@ class Clear {
 public:
     static int_fast8_t run(char* args) {
         Serial::send(CLEAR_SCREEN);
-
         return 0;
     }
 

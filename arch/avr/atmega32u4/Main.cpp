@@ -1,5 +1,5 @@
-#include "generic/C.h"
-#include "generic/Cpp.h"
+#include "C.h"
+#include "Cpp.h"
 #include "generic/AVRCpu.h"
 #include "SerialPort0.h"
 #include "comms/Serial.h"

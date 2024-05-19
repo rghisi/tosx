@@ -2,81 +2,84 @@
 // Created by ghisi on 18.03.23.
 //
 
-
-#include "cstring"
-#include "cstdio"
 #include "system/OS.h"
-#include "system/ExecutableTask.h"
+
 #include "comms/Serial.h"
+#include "system/ExecutableTask.h"
 
-void OS::schedule(Task *task) {
-    kernel->schedule(task);
-}
+Kernel* OS::kernel = nullptr;
 
-void OS::schedule(PeriodicTask *task) {
-    kernel->schedule(task);
-}
+void OS::schedule(Task *task) { kernel->schedule(task); }
 
-void OS::switchToTask(Task *task) {
-    kernel->switchToTask(task);
-}
+void OS::schedule(PeriodicTask *task) { kernel->schedule(task); }
 
-void OS::yield() {
-    kernel->yield();
-}
+void OS::switchToTask(Task *task) { kernel->switchToTask(task); }
 
-Promise* OS::await(Promise *promise) {
-    return kernel->await(promise);
-}
+void OS::yield() { kernel->yield(); }
 
-void OS::sleep(uint_fast16_t ms) {
-    kernel->sleep(ms);
-}
+Promise *OS::await(Promise *promise) { return kernel->await(promise); }
+
+void OS::sleep(uint_fast16_t ms) { kernel->sleep(ms); }
+
+void OS::terminate(Task *task) { kernel->terminate(task); }
 
 void *OS::memalloc(size_t len) {
-    disablePreemption();
-    auto ptr = memoryAllocator->allocate(len);
-    if (ptr == nullptr) {
-        Serial::send("\n\rOut of Memory - Aborting\n\r");
-//        OS::cpu->disableInterrupts();
-        while (true);
-    }
-    enablePreemption();
-    return ptr;
+  enterCritical();
+  auto ptr = memoryAllocator->allocate(len);
+  leaveCritical();
+  if (ptr == nullptr) {
+    Serial::send("\n\rOut of Memory - Aborting\n\r");
+    kernel->killCurrentTask();
+  }
+  return ptr;
 }
 
 void OS::memfree(void *p) {
-    disablePreemption();
-    memoryAllocator->free(p);
-    enablePreemption();
+  enterCritical();
+  memoryAllocator->free(p);
+  leaveCritical();
 }
 
-MemoryStats *OS::memoryStats() {
-    return memoryAllocator->stats();
+MemoryStats *OS::memoryStats() { return memoryAllocator->stats(); }
+
+Task *OS::createTask(const char *name, int_fast8_t (*entryPoint)(char *),
+                     char *args) {
+  auto *task = new ExecutableTask(name, entryPoint, args);
+  return task;
 }
 
-Task *OS::createTask(int_fast8_t (*entryPoint)(char *), char *args) {
-    //switch context or allocator, then...
-    auto* task = new ExecutableTask(entryPoint, args);
-    return task;
+void OS::preempt() { kernel->preempt(); }
+
+void OS::enablePreemption() { kernel->enablePreemption(); }
+
+void OS::disablePreemption() { kernel->disablePreemption(); }
+
+void OS::incrementTick() { kernel->incrementTick(); }
+
+uint32_t OS::now() { return kernel->now(); }
+
+bool OS::disableInterupts() {
+  if (kernel == nullptr) {
+    return false;
+  }
+  return kernel->disableInterrupts();
 }
 
-void OS::preempt() {
-    kernel->preempt();
+bool OS::enableInterupts() {
+  if (kernel == nullptr) {
+    return false;
+  }
+  return kernel->enableInterrupts();
 }
 
-void OS::enablePreemption() {
-    kernel->enablePreemption();
+void OS::enterCritical() {
+  if (kernel != nullptr) {
+    kernel->enterCritical();
+  }
 }
 
-void OS::disablePreemption() {
-    kernel->disablePreemption();
-}
-
-void OS::incrementTick() {
-    kernel->incrementTick();
-}
-
-uint32_t OS::now() {
-    return kernel->now();
+void OS::leaveCritical() {
+  if (kernel != nullptr) {
+    kernel->leaveCritical();
+  }
 }
