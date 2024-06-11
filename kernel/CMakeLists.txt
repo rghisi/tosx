@@ -20,7 +20,6 @@ target_sources(${TARGET} INTERFACE
         ${CMAKE_CURRENT_LIST_DIR}/include/setup/Cpp.h
         ${CMAKE_CURRENT_LIST_DIR}/include/std/Random.h
         ${CMAKE_CURRENT_LIST_DIR}/include/std/RandomProvider.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/std/String.h
         ${CMAKE_CURRENT_LIST_DIR}/include/system/Cpu.h
         ${CMAKE_CURRENT_LIST_DIR}/include/system/DoublyLinkedMemoryAllocator.h
         ${CMAKE_CURRENT_LIST_DIR}/include/system/Event.h

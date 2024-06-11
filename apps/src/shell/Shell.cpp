@@ -36,13 +36,13 @@ Shell::Shell() {
                 }
                 break;
             case CARRIAGE_RETURN:
-                printf("\n");
+                printf(LINE_FEED);
                 executeLineHandler();
                 resetLine();
                 break;
             default:
                 if (column == LAST) {
-                    printf("\n");
+                    printf(LINE_FEED);
                     resetLine();
                 } else {
                     line[column++] = character;
@@ -65,10 +65,12 @@ void Shell::executeLineHandler() {
         return;
     }
 
-    auto commandLine = new CommandLine(line);
+    auto commandLine = CommandLine(line);
+    auto command = commandLine.command();
 
     auto appNameMatcher = [&](Node *app) -> bool {
-        return strcmp(app->name(), (const char *) commandLine->command()) == 0;
+        auto appName = std::string_view(app->name());
+        return command.compare(appName) == 0;
     };
 
     auto apps = FileSystemService::instance()->getDir("/bin")->list();
@@ -79,21 +81,19 @@ void Shell::executeLineHandler() {
         auto app = apps[index];
         auto name = app->name();
         int_fast8_t (*entryPointFunction)(char *) = static_cast<ExecutableFile *>(app)->entryPointFunction;
-        if (commandLine->endsWith('&')) {
-            delete commandLine;
+        if (commandLine.endsWith('&')) {
             executeBackground(name, entryPointFunction, line);
         } else {
-            delete commandLine;
             executeForeground(name, entryPointFunction, line);
         }
     } else {
-        printf("command %s%s %snot found%s\r\n",
+        printf("command %s%.*s %snot found%s\r\n",
                COLOR_WHITE_BRIGHT,
-               commandLine->command(),
+               command.length(),
+               command.data(),
                COLOR_RED_BRIGHT,
                RESET_STYLE
         );
-        delete commandLine;
     }
 }
 
@@ -113,7 +113,7 @@ void Shell::executeBackground(const char *name,
 }
 
 int_fast8_t Shell::run(char *args) {
-    auto shell = new Shell();
-    shell->run();
+    auto shell = Shell();
+    shell.run();
     return 0;
 }

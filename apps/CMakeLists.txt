@@ -1,14 +1,15 @@
 target_sources(${TARGET} INTERFACE
+        apps/include/fs/RomFileSystem.h
         apps/include/misc/Clear.h
         apps/include/misc/CountDown.h
+        apps/include/misc/CpuTest.h
         apps/include/misc/Echo.h
         apps/include/misc/Free.h
         apps/include/misc/Init.h
         apps/include/misc/List.h
         apps/include/misc/LongTask.h
-        apps/include/misc/MemTest.h
-        apps/include/misc/CpuTest.h
         apps/include/misc/MemStatus.h
+        apps/include/misc/MemTest.h
         apps/include/misc/Null.h
         apps/include/misc/PiTask.h
         apps/include/shell/CommandLine.h

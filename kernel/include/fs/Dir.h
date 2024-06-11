@@ -22,7 +22,7 @@ public:
 
     Dir *findDir(std::string_view childName);
 
-    Dir *getDir(std::unique_ptr<std::string_view> path);
+    Dir *getDir(std::string_view path);
 
     void Link(Node *node);
 

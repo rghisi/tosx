@@ -2,78 +2,59 @@
 // Created by ghisi on 09.03.24.
 //
 
+#include <string_view>
+#include <memory>
 #include "shell/CommandLine.h"
-#include "std/String.h"
 
 CommandLine::CommandLine(const char *args) {
-    parts = String::split(' ', args);
-    numberOfParameters = String::count(' ', args) + 1;
+    this->args = args;
 }
 
-char *CommandLine::command() {
-    return parts[0];
-}
+CommandLine::~CommandLine() = default;
 
-char *CommandLine::parameter(uint_fast16_t index) {
-    return parts[index + 1];
-}
-
-bool CommandLine::hasParameter(const char *paramName) {
-    for (size_t i = 1; i < numberOfParameters; i++) {
-        bool result = true;
-        auto part = parts[i];
-        size_t j = 0;
-        while (paramName[j] != 0 && part[j] != 0) {
-            result &= paramName[j] == part[j];
-            j++;
-        }
-        result &= paramName[j - 1] != 0;
-        result &= part[j - 1] != 0;
-        if (result) {
-            return true;
-        }
+std::string_view CommandLine::command() {
+    auto view = std::string_view(args);
+    auto firstSpace = view.find(' ');
+    if (firstSpace != std::string_view::npos) {
+        view.remove_suffix(view.length() - firstSpace);
     }
-
-    return false;
+//    printf("%.*s\r\n", static_cast<int>(view.length()), view.data());
+    return view;
 }
 
-CommandLine::~CommandLine() {
-    for (size_t i = 0; i < numberOfParameters; i++) {
-        delete[] parts[i];
-    }
-    delete[] parts;
+std::string_view CommandLine::parameter(uint_fast16_t index) {
+    auto view = std::string_view(args);
+    auto i = index + 1;
+    size_t separatorPosition = 0;
+    do {
+        separatorPosition = view.find(' ', separatorPosition);
+        i--;
+    } while (i > 0);
+    view.remove_prefix(separatorPosition + 1);
+
+    return view;
 }
 
 bool CommandLine::endsWith(char c) {
-    auto lastPart = parts[numberOfParameters - 1];
-
-    return lastPart[0] == c;
+    auto view = std::string_view(args);
+    return view.ends_with(c);
 }
 
-char *CommandLine::parameters() {
-    size_t length = numberOfParameters;
-    for (size_t i = 1; i < numberOfParameters; i++) {
-        length += strlen(parts[i]);
+std::string_view CommandLine::parameters() {
+    auto view = std::string_view(args);
+    auto firstSpace = view.find(' ');
+    if (firstSpace != std::string_view::npos) {
+        view.remove_prefix(firstSpace + 1);
     }
 
-    auto result = new char[length];
-    if (length > 1) {
-        size_t ri = 0;
-        for (size_t i = 1; i < numberOfParameters; i++) {
-            auto part = parts[i];
-            size_t j = 0;
-            while (part[j] != 0) {
-                result[ri] = part[j];
-                j++;
-                ri++;
-            }
-            result[ri] = ' ';
-            ri++;
-        }
-        result[--ri] = 0;
-    } else {
-        result[0] = 0;
-    }
+    return view;
+}
 
-    return result;
+bool CommandLine::hasParameters() {
+    return NumberOfParameters() > 0;
+}
+
+uint_fast8_t CommandLine::NumberOfParameters() {
+    auto view = std::string_view(args);
+    return std::count(view.begin(), view.end(), ' ');
 }

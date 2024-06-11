@@ -16,11 +16,9 @@ public:
 };
 
 int_fast8_t Echo::run(char *args) {
-    auto commandLine = new CommandLine(args);
-    auto parameters = commandLine->parameters();
-    delete commandLine;
-    printf("%s\r\n", parameters);
-    delete parameters;
+    auto commandLine = CommandLine(args);
+    auto parameters = commandLine.parameters();
+    printf("%.*s\r\n", parameters.length(), parameters.data());
     return 0;
 }
 

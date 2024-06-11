@@ -7,7 +7,7 @@
 #include "system/StaticStack.h"
 
 Task::Task() {
-    this->stack = new StaticStack<192>();
+    this->stack = new StaticStack<256>();
 }
 
 Task::~Task() {

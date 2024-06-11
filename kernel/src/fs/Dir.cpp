@@ -31,14 +31,14 @@ File *Dir::mkfile(const char *name, void *ptr) {
     return file;
 }
 
-Dir *Dir::getDir(std::unique_ptr<std::string_view> path) {
-    if (path->empty() || path->compare(std::string_view(name())) == 0) {
+Dir *Dir::getDir(std::string_view path) {
+    if (path.empty() || path.compare(std::string_view(name())) == 0) {
         return this;
     }
-    auto dirName = path->substr(0, path->size());
-    auto nextSlash = path->find('/');
+    auto dirName = path.substr(0, path.size());
+    auto nextSlash = path.find('/');
     if (nextSlash != std::string_view::npos) {
-        dirName = path->substr(0, nextSlash);
+        dirName = path.substr(0, nextSlash);
     }
     auto foundDir = std::find_if(children.begin(), children.end(), [dirName](Node *node) {
         auto nodeName = std::string_view(node->name());
@@ -47,8 +47,8 @@ Dir *Dir::getDir(std::unique_ptr<std::string_view> path) {
 
     if (foundDir != children.end()) {
         auto nextDir = static_cast<Dir*>(*foundDir);
-        path->remove_prefix(nextSlash + 1);
-        return nextDir->getDir(std::move(path));
+        path.remove_prefix(nextSlash + 1);
+        return nextDir->getDir(path);
     }
 
     return nullptr;

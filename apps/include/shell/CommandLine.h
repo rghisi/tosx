@@ -12,15 +12,15 @@ class CommandLine {
 public:
     explicit CommandLine(const char* args);
     ~CommandLine();
-    char* command();
-    char* parameter(uint_fast16_t index);
-    bool hasParameter(const char* paramName);
+    std::string_view command();
+    std::string_view parameter(uint_fast16_t index);
     bool endsWith(char c);
-    char *parameters();
+    std::string_view parameters();
+    bool hasParameters();
 
 private:
-    char** parts;
-    uint_fast16_t numberOfParameters;
+    const char* args;
+    uint_fast8_t NumberOfParameters();
 };
 
 #endif //AVR_COMMANDLINE_H

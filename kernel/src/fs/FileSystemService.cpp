@@ -20,10 +20,19 @@ FileSystemService *FileSystemService::instance() {
 }
 
 Dir *FileSystemService::getDir(const char *path) {
-    auto pathView = std::make_unique<std::string_view>(path);
-    if (pathView->starts_with('/')) {
-        pathView->remove_prefix(1);
-        return root.getDir(std::move(pathView));
+    auto pathView = std::string_view(path);
+
+    return getDir(pathView);
+}
+
+void FileSystemService::Mount(FileSystem *fileSystem, Dir *intoDir, MountOption mountOption) {
+    fileSystem->Mount(intoDir);
+}
+
+Dir *FileSystemService::getDir(std::string_view path) {
+    if (path.starts_with('/')) {
+        path.remove_prefix(1);
+        return root.getDir(path);
     }
 
     return nullptr;

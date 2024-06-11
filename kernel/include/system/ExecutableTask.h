@@ -30,7 +30,7 @@ void ExecutableTask::execute() {
 }
 
 ExecutableTask::~ExecutableTask() {
-    //delete args;
+    delete[] args;
 }
 
 

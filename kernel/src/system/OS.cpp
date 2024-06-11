@@ -2,9 +2,10 @@
 // Created by ghisi on 18.03.23.
 //
 
+#include <cstring>
+#include <cstdio>
 #include "system/OS.h"
 
-#include "comms/Serial.h"
 #include "system/ExecutableTask.h"
 
 Kernel* OS::kernel = nullptr;
@@ -29,7 +30,7 @@ void *OS::memalloc(size_t len) {
   auto ptr = memoryAllocator->allocate(len);
   leaveCritical();
   if (ptr == nullptr) {
-    Serial::send("\n\rOut of Memory - Aborting\n\r");
+    printf("\n\rOut of Memory - Aborting\n\r");
     kernel->killCurrentTask();
   }
   return ptr;
@@ -43,35 +44,18 @@ void OS::memfree(void *p) {
 
 MemoryStats *OS::memoryStats() { return memoryAllocator->stats(); }
 
-Task *OS::createTask(const char *name, int_fast8_t (*entryPoint)(char *),
-                     char *args) {
-  auto *task = new ExecutableTask(name, entryPoint, args);
+Task *OS::createTask(const char *name, int_fast8_t (*entryPoint)(char *), char *args) {
+  auto argsCopy = new char[strlen(args) + 1];
+  strcpy(argsCopy, args);
+  auto *task = new ExecutableTask(name, entryPoint, argsCopy);
   return task;
 }
 
 void OS::preempt() { kernel->preempt(); }
 
-void OS::enablePreemption() { kernel->enablePreemption(); }
-
-void OS::disablePreemption() { kernel->disablePreemption(); }
-
 void OS::incrementTick() { kernel->incrementTick(); }
 
 uint32_t OS::now() { return kernel->now(); }
-
-bool OS::disableInterupts() {
-  if (kernel == nullptr) {
-    return false;
-  }
-  return kernel->disableInterrupts();
-}
-
-bool OS::enableInterupts() {
-  if (kernel == nullptr) {
-    return false;
-  }
-  return kernel->enableInterrupts();
-}
 
 void OS::enterCritical() {
   if (kernel != nullptr) {

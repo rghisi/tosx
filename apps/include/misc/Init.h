@@ -22,6 +22,7 @@
 #include "PiTask.h"
 #include "shell/Shell.h"
 #include "List.h"
+#include "fs/RomFileSystem.h"
 
 class Init {
 public:
@@ -42,19 +43,7 @@ void Init::MountRoot() {
     printf("\tRoot FS\r\n");
     auto fs = FileSystemService::instance();
     auto bin = fs->getDir("/")->mkdir("bin");
-    bin->Link(new ExecutableFile("ls", &(List::run)));
-    bin->Link(new ExecutableFile("echo", &(Echo::run)));
-    bin->Link(new ExecutableFile("free", &(Free::run)));
-    bin->Link(new ExecutableFile("pi", &(PiTask::run)));
-    bin->Link(new ExecutableFile("long", &(LongTask::run)));
-    bin->Link(new ExecutableFile("clear", &(Clear::run)));
-    bin->Link(new ExecutableFile("cdn", &CountDown::run));
-    bin->Link(new ExecutableFile("uptime", &(Uptime::run)));
-    bin->Link(new ExecutableFile("null", &(Null::run)));
-    bin->Link(new ExecutableFile("memtest", &(MemTest::run)));
-    bin->Link(new ExecutableFile("cputest", &(CpuTest::run)));
-    bin->Link(new ExecutableFile("memstatus", &(MemStatus::run)));
-    bin->Link(new ExecutableFile("random", &(RandomTest::run)));
+    fs->Mount(new RomFileSystem(), bin, FileSystemService::MountOption::READ_ONLY);
 }
 
 void Init::StartShell() {
