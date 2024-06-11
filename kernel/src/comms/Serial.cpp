@@ -6,6 +6,8 @@
 
 #include "cstdio"
 
+Serial *Serial::self = nullptr;
+
 Serial::Serial(USART *usart) {
   this->usart = usart;
 }

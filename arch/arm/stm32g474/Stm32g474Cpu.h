@@ -20,7 +20,7 @@ class Stm32g474 : public CortexM4Cpu {
 
 void Stm32g474::setup() {
   rcc_clock_setup_pll(&rcc_hsi_configs[RCC_CLOCK_3V3_170MHZ]);
-  RCC_CRRCR |= 1;
+  RCC_CRRCR = RCC_CRRCR | 1;
   CortexM4Cpu::setup();
 }
 

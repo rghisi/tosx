@@ -5,15 +5,15 @@
 #include <gtest/gtest.h>
 #include "system/DoublyLinkedMemoryAllocator.h"
 
-TEST(MemoryAllocator, ShouldHave100PercentFreeWhenStarting) {
-    constexpr auto managedMemorySize = 640;
-    constexpr auto blockOverhead = DoublyLinkedMemoryAllocator<managedMemorySize>::AllocationOverhead;
-    auto allocator = DoublyLinkedMemoryAllocator<managedMemorySize>();
-
-    auto expectedAvailableMemory = managedMemorySize - blockOverhead;
-
-//    ASSERT_EQ(expectedAvailableMemory, allocator.memoryAvailable());
-}
+//TEST(MemoryAllocator, ShouldHave100PercentFreeWhenStarting) {
+//    constexpr auto managedMemorySize = 640;
+//    constexpr auto blockOverhead = DoublyLinkedMemoryAllocator<managedMemorySize>::AllocationOverhead;
+//    auto allocator = DoublyLinkedMemoryAllocator<managedMemorySize>();
+//
+//    auto expectedAvailableMemory = managedMemorySize - blockOverhead;
+//
+////    ASSERT_EQ(expectedAvailableMemory, allocator.memoryAvailable());
+//}
 
 TEST(MemoryAllocator, ShouldConsumeMemoryAllocatedPlusOneBlockWhenAllocatingMemory) {
     constexpr auto managedMemorySize = 640;

@@ -12,7 +12,7 @@ public:
     void increment();
     [[nodiscard]] uint32_t now() const;
 private:
-    volatile uint32_t ticks = 0;
+    uint32_t ticks = 0;
 };
 
 #endif //AVR_SYSTICKS_H

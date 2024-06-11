@@ -8,6 +8,6 @@ add_executable(${TARGET}
 )
 
 target_link_libraries(${TARGET} ocm3)
-set_property(TARGET ${TARGET} PROPERTY CXX_STANDARD 17)
+set_property(TARGET ${TARGET} PROPERTY CXX_STANDARD 20)
 arm_add_linker_script(${TARGET} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/lm4f/lm4f.ld)
 lm4f_add_flash_targets(${TARGET})

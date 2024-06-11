@@ -6,10 +6,11 @@
 #define AVR_EXECUTABLEFILE_H
 
 #include "cstdint"
+#include "fs/Node.h"
 
-class ExecutableFile {
+class ExecutableFile: public Node {
 public:
-    ExecutableFile(const char* name, int_fast8_t (*entryPoint)(char*));
+    ExecutableFile(const char *name, int_fast8_t (*entryPoint)(char *));
     const char* name;
     int_fast8_t (*entryPointFunction)(char *);
 };

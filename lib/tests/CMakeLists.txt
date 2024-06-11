@@ -1,4 +1,4 @@
-target_sources(${PROJECT_NAME} PUBLIC
+target_sources(${TARGET} PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/collections/CircularQueueTest.cpp
         ${CMAKE_CURRENT_LIST_DIR}/collections/FragmentedTextTest.cpp
         ${CMAKE_CURRENT_LIST_DIR}/collections/LinkedListTest.cpp

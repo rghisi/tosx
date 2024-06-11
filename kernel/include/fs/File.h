@@ -15,13 +15,4 @@ public:
     void *ptr = nullptr;
 };
 
-File::File(const char *name) : Node(name) {}
-
-File::File(const char *name, Node *parent): Node(name, parent) {}
-
-File::File(const char *name, Node *parent, void *ptr): Node(name, parent) {
-    this->ptr = ptr;
-}
-
-
 #endif //TOSX_FILE_H

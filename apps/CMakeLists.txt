@@ -3,6 +3,8 @@ target_sources(${TARGET} INTERFACE
         apps/include/misc/CountDown.h
         apps/include/misc/Echo.h
         apps/include/misc/Free.h
+        apps/include/misc/Init.h
+        apps/include/misc/List.h
         apps/include/misc/LongTask.h
         apps/include/misc/MemTest.h
         apps/include/misc/CpuTest.h
@@ -18,6 +20,7 @@ target_sources(${TARGET} INTERFACE
 )
 
 target_sources(${TARGET} PUBLIC
+        apps/src/shell/CommandLine.cpp
         apps/src/shell/ExecutableFile.cpp
         apps/src/shell/Shell.cpp
 )

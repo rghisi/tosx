@@ -1,8 +1,10 @@
-add_executable(${PROJECT_NAME}
+set(TARGET "tosxtests")
+
+add_executable(${TARGET}
         ${CMAKE_CURRENT_LIST_DIR}/Main.cpp
 )
 
 enable_testing()
 
-target_link_libraries(${PROJECT_NAME} gtest)
-target_link_libraries(${PROJECT_NAME} gmock)
+target_link_libraries(${TARGET} gtest)
+target_link_libraries(${TARGET} gmock)

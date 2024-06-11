@@ -8,6 +8,7 @@
 #include "system/ExecutableTask.h"
 
 Kernel* OS::kernel = nullptr;
+MemoryAllocator *OS::memoryAllocator = nullptr;
 
 void OS::schedule(Task *task) { kernel->schedule(task); }
 

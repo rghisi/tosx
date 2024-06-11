@@ -8,13 +8,12 @@
 #include "ShellCommand.h"
 #include "ExecutableFile.h"
 #include "array"
+#include "fs/Dir.h"
 
 class Shell {
 public:
     Shell();
     [[noreturn]] void run();
-    std::array<ExecutableFile*, 12> apps;
-    std::array<ShellCommand*, 1> commands;
     static int_fast8_t run(char *args);
 private:
     static constexpr uint_fast8_t COLUMNS = 40;
