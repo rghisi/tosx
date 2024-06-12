@@ -16,7 +16,8 @@ This OS is a good candidate to be the foundation for a future homebrew computer.
       * starts to get interesting?
   * ARM CortexM4
     * [ ] STM32G431
-    * [ ] TI LM4F120 (because it is available)
+    * [x] STM32G474
+    * [x] TI LM4F120 (because it is available)
   * x86_32
     * [ ] QEMU
   * M68K
@@ -49,6 +50,7 @@ This OS is a good candidate to be the foundation for a future homebrew computer.
   * `cdn` - runs a countdown from 10, can be used to exercise multitasking
   * `uptime` - shows uptime since last reset (ugly output formatting)
 * [ ] Filesystem
+  * [x] Basic ROM FS
 * [ ] File support
 
 ## Architecture (WIP)
