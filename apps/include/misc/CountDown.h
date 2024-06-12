@@ -18,11 +18,10 @@ public:
 };
 
 int_fast8_t CountDown::run(char *args) {
-    auto commandLine = new CommandLine(args);
-    auto instance = commandLine->parameter(0)[0];
-    delete commandLine;
-    for (uint8_t c = 10; c > 0; c--) {
-        printf("%c:%u\r\n", instance, c);
+    auto commandLine = CommandLine(args);
+    auto instance = commandLine.parameter(0).at(0);
+    for (uint8_t counter = 10; counter > 0; counter--) {
+        printf("%c:%u\r\n", instance, counter);
         for (uint32_t t = 0; t < 8000000; t++){
           __asm volatile ("nop");
         }

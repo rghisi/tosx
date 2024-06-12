@@ -10,13 +10,16 @@ target_sources(${TARGET} INTERFACE
         ${CMAKE_CURRENT_LIST_DIR}/include/events/Subscriber.h
         ${CMAKE_CURRENT_LIST_DIR}/include/events/SubscriberRegistry.h
         ${CMAKE_CURRENT_LIST_DIR}/include/events/SubscriberRegistry.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/fs/File.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/fs/FileSystemService.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/fs/Dir.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/fs/Node.h
         ${CMAKE_CURRENT_LIST_DIR}/include/io/KeyPressEvent.h
         ${CMAKE_CURRENT_LIST_DIR}/include/io/Keyboard.h
         ${CMAKE_CURRENT_LIST_DIR}/include/setup/C.h
         ${CMAKE_CURRENT_LIST_DIR}/include/setup/Cpp.h
         ${CMAKE_CURRENT_LIST_DIR}/include/std/Random.h
         ${CMAKE_CURRENT_LIST_DIR}/include/std/RandomProvider.h
-        ${CMAKE_CURRENT_LIST_DIR}/include/std/String.h
         ${CMAKE_CURRENT_LIST_DIR}/include/system/Cpu.h
         ${CMAKE_CURRENT_LIST_DIR}/include/system/DoublyLinkedMemoryAllocator.h
         ${CMAKE_CURRENT_LIST_DIR}/include/system/Event.h
@@ -42,6 +45,10 @@ target_sources(${TARGET} INTERFACE
 
 target_sources(${TARGET} PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/src/comms/Serial.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/fs/File.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/fs/FileSystemService.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/fs/Dir.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/fs/Node.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/std/Random.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/system/IdleTask.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/system/Kernel.cpp

@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 project(tosx CXX C)
 set(CMAKE_CXX_STANDARD 20)
-#set(CMAKE_CXX_FLAGS_RELEASE "-Os")
-#set(CMAKE_CXX_FLAGS_DEBUG "-Og")
 
 add_compile_options("-I${CMAKE_SOURCE_DIR}/lib/include")
 add_compile_options("-I${CMAKE_SOURCE_DIR}/kernel/include")
@@ -26,8 +24,15 @@ if (NOT CMAKE_BUILD_TYPE STREQUAL "Tests")
     include(lib/CMakeLists.txt)
 
 else()
+    set(CMAKE_CXX_FLAGS_TESTS "-g")
+    include(tests/CMakeLists.txt)
+
+    include(kernel/CMakeLists.txt)
+    include(apps/CMakeLists.txt)
+    include(lib/CMakeLists.txt)
+
+    include(kernel/tests/CMakeLists.txt)
     include(lib/tests/CMakeLists.txt)
-#    include(kernel/tests/CMakeLists.txt)
 endif ()
 
 

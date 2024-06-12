@@ -5,10 +5,11 @@
 #ifndef AVR_CPP_H
 #define AVR_CPP_H
 
+#include <new>
 #include "cstddef"
 #include "system/OS.h"
 
-void * operator new(size_t size)
+void * operator new(size_t size, std::align_val_t a)
 {
     return OS::memalloc(size);
 }

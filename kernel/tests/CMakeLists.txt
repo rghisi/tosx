@@ -1,10 +1,5 @@
-add_executable(${PROJECT_NAME}
-        ${CMAKE_CURRENT_LIST_DIR}/Main.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/system/DoublyLinkedMemoryAllocatorTest.cpp
+target_sources(${TARGET} PUBLIC
+#        ${CMAKE_CURRENT_LIST_DIR}/system/DoublyLinkedMemoryAllocatorTest.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/fs/FSTest.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/fs/FileSystemServiceTest.cpp
 )
-
-enable_testing()
-
-target_link_libraries(${PROJECT_NAME} gtest)
-target_link_libraries(${PROJECT_NAME} gmock)
-

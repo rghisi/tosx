@@ -32,7 +32,7 @@ target_compile_options(libopencm3_stm32g4 INTERFACE ${COMPILE_OPTIONS})
 target_link_options(libopencm3_stm32g4 INTERFACE ${COMPILE_OPTIONS})
 
 target_link_libraries(${TARGET} libopencm3_stm32g4)
-set_property(TARGET ${TARGET} PROPERTY CXX_STANDARD 17)
+set_property(TARGET ${TARGET} PROPERTY CXX_STANDARD 20)
 arm_add_linker_script(${TARGET} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/stm32g474/stm32g474.ld)
 
 add_custom_command(
