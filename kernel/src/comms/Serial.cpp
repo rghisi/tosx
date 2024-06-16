@@ -35,23 +35,18 @@ Promise *Serial::sendAsync(uint8_t *bytes, size_t size) {
   return promise;
 }
 
-static char IntToHex(size_t x) {
-  x &= 15;
-  if (x <= 9) return x + '0';
-  return x - 10 + 'A';
+void Serial::send(uint32_t value) {
+    char buffer[11];
+    char *p = &buffer[10];
+    *p = '\0';
+    do {
+        *--p = "0123456789"[value % 10];
+    } while (value /= 10);
+    send(p);
 }
 
 void Serial::send(size_t num) {
-  Serial::self->usart->send('0');
-  Serial::self->usart->send('x');
-  Serial::self->usart->send(IntToHex(num >> 28));
-  Serial::self->usart->send(IntToHex(num >> 24));
-  Serial::self->usart->send(IntToHex(num >> 20));
-  Serial::self->usart->send(IntToHex(num >> 16));
-  Serial::self->usart->send(IntToHex(num >> 12));
-  Serial::self->usart->send(IntToHex(num >> 8));
-  Serial::self->usart->send(IntToHex(num >> 4));
-  Serial::self->usart->send(IntToHex(num));
+  send((uint32_t) num);
 }
 
 PromiseWithReturn<char> *Serial::readCharAsync() {

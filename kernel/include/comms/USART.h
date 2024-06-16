@@ -6,7 +6,7 @@
 #define AVR_USART_H
 
 #include "cstdint"
-#include "../system/PromiseWithReturn.h"
+#include "system/PromiseWithReturn.h"
 
 class USART {
 public:

@@ -11,7 +11,7 @@
 #include "system/TaskState.h"
 
 Scheduler::Scheduler() {
-  name = "Scheduler";
+  name = "Kernel";
 }
 
 void Scheduler::schedule(Task *task) {

@@ -10,14 +10,7 @@
 #include "RandomProvider.h"
 
 class Random {
- protected:
-  explicit Random(RandomProvider *provider);
-  static Random *instance;
-
  public:
-  Random(Random &other) = delete;
-  void operator=(const Random &) = delete;
-
   static void setup(RandomProvider *randomProvider);
   static uint8_t next();
   static uint16_t next16();
@@ -25,7 +18,7 @@ class Random {
   static void seed(uint8_t);
 
  private:
-  RandomProvider *provider;
+  static RandomProvider *provider;
 };
 
 #endif  // AVR_RANDOM_H

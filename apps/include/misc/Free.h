@@ -16,16 +16,17 @@ class Free {
 };
 
 int_fast8_t Free::run(char* args) {
-  auto memoryStats = OS::memoryStats();
-  printf("Bytes\r\n");
-  printf(" Size:\t%u\r\n", memoryStats->size);
-  printf(" Total:\t%u\r\n", memoryStats->used + memoryStats->free);
-  printf(" Used:\t%u\r\n", memoryStats->used);
-  printf(" Free:\t%u\r\n", memoryStats->free);
-  printf("Blocks\r\n");
-  printf(" Total:\t%u\r\n", memoryStats->usedBlocks + memoryStats->freeBlocks);
-  printf(" Used:\t%u\r\n", memoryStats->usedBlocks);
-  printf(" Free:\t%u\r\n", memoryStats->freeBlocks);
+    OS::MemoryDump();
+//  auto memoryStats = OS::memoryStats();
+//  printf("Bytes\r\n");
+//  printf(" Size:\t%u\r\n", memoryStats->size);
+//  printf(" Total:\t%u\r\n", memoryStats->used + memoryStats->free);
+//  printf(" Used:\t%u\r\n", memoryStats->used);
+//  printf(" Free:\t%u\r\n", memoryStats->free);
+//  printf("Blocks\r\n");
+//  printf(" Total:\t%u\r\n", memoryStats->usedBlocks + memoryStats->freeBlocks);
+//  printf(" Used:\t%u\r\n", memoryStats->usedBlocks);
+//  printf(" Free:\t%u\r\n", memoryStats->freeBlocks);
 
   return 0;
 }

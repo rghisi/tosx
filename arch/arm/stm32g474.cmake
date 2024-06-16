@@ -5,6 +5,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/libopencm3.cmake")
 
 add_executable(${TARGET}
         ${CMAKE_CURRENT_LIST_DIR}/stm32g474/Main.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/stm32g474/Mutex.cpp
 )
 
 # create a target to build libopencm3 -- only for the target we need

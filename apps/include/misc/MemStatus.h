@@ -9,32 +9,35 @@
 #include "system/OS.h"
 
 class MemStatus {
- public:
-  [[noreturn]] static int_fast8_t run(char* args);
-  static void reportMemory();
+public:
+    [[noreturn]] static int_fast8_t run(char *args);
+
+    static void reportMemory();
 };
 
 void MemStatus::reportMemory() {
-  auto memoryStats = OS::memoryStats();
-  auto totalSeconds = OS::now() / 1000;
-  auto hours = (totalSeconds / 3600);
-  auto minutes = (totalSeconds - (3600 * hours)) / 60;
-  auto seconds = (totalSeconds - (3600 * hours) - (minutes * 60));
-  printf("\033[s\033[H\033[2K\033[1;41m  T %06u  U %06u  F %06u  %02lu:%02lu:%02lu \033[u\033[0m",
-         memoryStats->size,
-         memoryStats->used,
-         memoryStats->free,
-         hours,
-         minutes,
-         seconds
- );
+    auto memoryStats = OS::memoryStats();
+    auto totalSeconds = OS::now() / 1000;
+    auto hours = (totalSeconds / 3600);
+    auto minutes = (totalSeconds - (3600 * hours)) / 60;
+    auto seconds = (totalSeconds - (3600 * hours) - (minutes * 60));
+    printf("\033[s\033[H\033[2K\033[1;41m  T %06u  U %06u(%02u)  F %06u(%02u)  %02lu:%02lu:%02lu \033[u\033[0m",
+           memoryStats->size,
+           memoryStats->used,
+           memoryStats->usedBlocks,
+           memoryStats->free,
+           memoryStats->freeBlocks,
+           hours,
+           minutes,
+           seconds
+    );
 }
 
-[[noreturn]] int_fast8_t MemStatus::run(char* args) {
-  while (true) {
-    reportMemory();
-    OS::sleep(250);
-  }
+[[noreturn]] int_fast8_t MemStatus::run(char *args) {
+    while (true) {
+        reportMemory();
+        OS::sleep(100);
+    }
 }
 
 #endif  // AVR_MEMSTATUS_H

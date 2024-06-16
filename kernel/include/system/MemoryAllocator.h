@@ -19,9 +19,11 @@ public:
 
 class MemoryAllocator {
 public:
-    virtual uintptr_t *allocate(size_t requestedBytes) = 0;
+    virtual uintptr_t *allocate(size_t requestedBytes, uint_fast16_t ownerId) = 0;
     virtual void free(void *ptr) = 0;
     virtual MemoryStats *stats() = 0;
+    virtual size_t UsedMemory(uint_fast16_t ownerId) = 0;
+    virtual void Dump() = 0;
 };
 
 

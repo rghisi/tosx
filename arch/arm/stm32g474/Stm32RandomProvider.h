@@ -19,9 +19,6 @@ class Stm32RandomProvider: public RandomProvider {
 
 Stm32RandomProvider::Stm32RandomProvider() {
   rcc_periph_clock_enable(RCC_RNG);
-// RNG_CR |= RNG_CR_CED;
-//  RNG_CR |= RNG_CR_RNGEN;
-  //rng_interrupt_enable();
   rng_enable();
 }
 
@@ -34,8 +31,6 @@ uint16_t Stm32RandomProvider::next16() {
 }
 
 uint32_t Stm32RandomProvider::next32() {
-  //auto newValue = RNG_DR;
-
   return rng_get_random_blocking();
 }
 void Stm32RandomProvider::seed(uint32_t) {}

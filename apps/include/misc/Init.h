@@ -8,20 +8,7 @@
 
 #include "fs/FileSystemService.h"
 #include "shell/ExecutableFile.h"
-#include "Echo.h"
-#include "Free.h"
-#include "LongTask.h"
-#include "Clear.h"
-#include "CountDown.h"
-#include "Uptime.h"
-#include "Null.h"
-#include "MemTest.h"
-#include "CpuTest.h"
-#include "MemStatus.h"
-#include "RandomTest.h"
-#include "PiTask.h"
 #include "shell/Shell.h"
-#include "List.h"
 #include "fs/RomFileSystem.h"
 
 class Init {
