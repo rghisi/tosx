@@ -43,6 +43,7 @@ SECTIONS
     . = ALIGN(4);
     *(.rodata*) /* Read-only data */
     . = ALIGN(4);
+    _etext = .;
   } >rom
 
   /* C++ Static constructors/destructors, also used for
@@ -101,6 +102,7 @@ SECTIONS
   _data_loadaddr = LOADADDR(.data);
 
   .bss : {
+    _sbss = .;
     *(.bss*)  /* Read-write zero initialized data */
     *(COMMON)
     . = ALIGN(4);

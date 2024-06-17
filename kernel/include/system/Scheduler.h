@@ -63,8 +63,8 @@ public:
     void add(Task *task, Promise *promise);
 
 private:
-    CircularQueue<Task*, 5> scheduledTasks = CircularQueue<Task*, 5>();
-    CircularQueue<TaskPromise*, 5> taskPromises = CircularQueue<TaskPromise*, 5>();
+    CircularQueue<Task*, 15> scheduledTasks = CircularQueue<Task*, 15>();
+    CircularQueue<TaskPromise*, 15> taskPromises = CircularQueue<TaskPromise*, 15>();
     Task* idleTask{};
     void processPromises();
     void processRegularTasks();

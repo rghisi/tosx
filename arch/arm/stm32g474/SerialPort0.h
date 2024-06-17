@@ -6,14 +6,10 @@
 #define ARM_LM4F_SERIALPORT0_H
 
 #include "cstdint"
-//#include "vector"
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/usart.h>
-//#include <libopencm3/stm32/g4/nvic.h>
 #include "comms/USART.h"
-
-//extern "C" void lpuart_isr(void);
 
 class ReadCharPromise: public PromiseWithReturn<char> {
  public:

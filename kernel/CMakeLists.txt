@@ -34,6 +34,7 @@ target_sources(${TARGET} INTERFACE
         ${CMAKE_CURRENT_LIST_DIR}/include/system/Promise.h
         ${CMAKE_CURRENT_LIST_DIR}/include/system/PromiseWithReturn.h
         ${CMAKE_CURRENT_LIST_DIR}/include/system/Scheduler.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/system/SinglyLinkedMemoryAllocator.h
         ${CMAKE_CURRENT_LIST_DIR}/include/system/Stack.h
         ${CMAKE_CURRENT_LIST_DIR}/include/system/StaticStack.h
         ${CMAKE_CURRENT_LIST_DIR}/include/system/Task.h

@@ -4,8 +4,10 @@
 
 #ifndef AVR_CIRCULARQUEUE_H
 #define AVR_CIRCULARQUEUE_H
+#include <algorithm>
 #include <cstdint>
 #include <cstddef>
+#include <span>
 #include "type_traits"
 #include "FifoQueue.h"
 
@@ -20,13 +22,13 @@ public:
     bool isFull() override;
     size_t size() override;
     void clear();
+
 private:
-    uint_fast8_t capacity;
+    static constexpr const uint_fast8_t CAPACITY = S;
     uint_fast8_t used;
     uint_fast8_t pushIndex;
     uint_fast8_t popIndex;
     T queue[S];
-
 };
 
 template <typename T, std::size_t S>
@@ -34,7 +36,6 @@ CircularQueue<T, S>::CircularQueue() {
     pushIndex = 0;
     popIndex = 0;
     used = 0;
-    capacity = S;
 }
 
 template <typename T, std::size_t S>
@@ -44,16 +45,16 @@ bool CircularQueue<T, S>::isEmpty() {
 
 template <typename T, std::size_t S>
 bool CircularQueue<T, S>::isFull() {
-    return used == capacity;
+    return used == CAPACITY;
 }
 
 template<typename T, std::size_t S>
 bool CircularQueue<T, S>::push(T item) {
-    if (used < capacity) {
+    if (used < CAPACITY) {
         used++;
         queue[pushIndex] = item;
         pushIndex++;
-        if (pushIndex == capacity) {
+        if (pushIndex == CAPACITY) {
             pushIndex = 0;
         }
 
@@ -74,7 +75,7 @@ T CircularQueue<T, S>::pop() {
             this->queue[popIndex] = nullptr;
         }
         popIndex++;
-        if (popIndex == capacity) {
+        if (popIndex == CAPACITY) {
             popIndex = 0;
         }
         return item;
@@ -111,6 +112,5 @@ template<typename T, std::size_t S>
 size_t CircularQueue<T, S>::size() {
     return used;
 }
-
 
 #endif //AVR_CIRCULARQUEUE_H

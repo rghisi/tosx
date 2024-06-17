@@ -16,6 +16,7 @@ public:
     static void send(const uint8_t *bytes, size_t size);
     static void send(char c);
     static void send(const char *text);
+    static void send(uint32_t num);
     static void send(size_t num);
     static Promise *sendAsync(uint8_t *bytes, size_t size);
     static Serial *self;

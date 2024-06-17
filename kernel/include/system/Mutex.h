@@ -2,34 +2,17 @@
 // Created by ghisi on 11.03.24.
 //
 
-#ifndef AVR_MUTEX_H
-#define AVR_MUTEX_H
+#ifndef TOSX_MUTEX_H
+#define TOSX_MUTEX_H
 
-#include "OS.h"
-#include "../collections/LinkedList.h"
+#include <cstdint>
 
 class Mutex {
 public:
-    void acquire();
+    bool acquire();
     void release();
 private:
-    bool free = true;
-    LinkedList<Promise*>* promises = new LinkedList<Promise*>();
+    uint32_t locked = 0;
 };
 
-void Mutex::acquire() {
-    while (!free) {
-        auto promise = new Promise();
-        promises->push(promise);
-        OS::await(promise);
-    }
-    free = false;
-}
-
-void Mutex::release() {
-    free = true;
-    promises->pop()->complete();
-}
-
-
-#endif //AVR_MUTEX_H
+#endif //TOSX_MUTEX_H

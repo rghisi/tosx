@@ -12,26 +12,28 @@
 enum class AllocationFlags { FREE = 0x00, USED = 0xFF };
 
 class Allocation {
- public:
-  explicit Allocation(size_t size) {
-    this->size = size + sizeof(Allocation);
-    flags = AllocationFlags::FREE;
-  }
-  size_t size;
-  AllocationFlags flags;
-  Allocation *previous = nullptr;
-  Allocation *next = nullptr;
+public:
+    explicit Allocation(size_t size) {
+        this->size = size + sizeof(Allocation);
+        flags = AllocationFlags::FREE;
+    }
 
-  [[nodiscard]] bool isFree() const { return flags == AllocationFlags::FREE; }
+    size_t size;
+    AllocationFlags flags;
+    uint_fast16_t ownerId;
+    Allocation *next = nullptr;
+
+    [[nodiscard]] bool isFree() const { return flags == AllocationFlags::FREE; }
 };
 
 template <size_t S>
 class DoublyLinkedMemoryAllocator : public MemoryAllocator {
  public:
   DoublyLinkedMemoryAllocator();
-  uintptr_t *allocate(size_t requestedBytes) override;
+  uintptr_t *allocate(size_t requestedBytes, uint_fast16_t ownerId) override;
   void free(void *ptr) override;
   MemoryStats *stats() override;
+  size_t UsedMemory(uint_fast16_t i) override;
 
  private:
   constexpr static auto AddressSize = sizeof(uintptr_t);
@@ -69,7 +71,7 @@ DoublyLinkedMemoryAllocator<S>::DoublyLinkedMemoryAllocator() {
 }
 
 template <size_t S>
-uintptr_t *DoublyLinkedMemoryAllocator<S>::allocate(size_t requestedBytes) {
+uintptr_t *DoublyLinkedMemoryAllocator<S>::allocate(size_t requestedBytes, uint_fast16_t ownerId) {
   const auto totalBytesRequired = aligned(requestedBytes + HeaderSize);
 
   auto *allocation = findBestAllocation(totalBytesRequired);
@@ -77,6 +79,8 @@ uintptr_t *DoublyLinkedMemoryAllocator<S>::allocate(size_t requestedBytes) {
   if (allocation == nullptr) {
     return nullptr;
   }
+
+  allocation->ownerId = ownerId;
 
   auto bytesLeftAfterAllocation = allocation->size - totalBytesRequired;
 
@@ -94,7 +98,6 @@ uintptr_t *DoublyLinkedMemoryAllocator<S>::allocate(size_t requestedBytes) {
     const auto nextAllocationAddress = &currentAllocationAddress[(totalBytesRequired >> BytesToWordShift)];
     const auto freeBlock = new (nextAllocationAddress) Allocation(bytesLeftAfterAllocation - HeaderSize);
     freeBlock->next = allocation->next;
-    freeBlock->previous = allocation;
     allocation->next = freeBlock;
   } else {
     memoryStats.freeBlocks--;
@@ -136,14 +139,11 @@ void DoublyLinkedMemoryAllocator<S>::free(void *ptr) {
 
   if (allocation->flags == AllocationFlags::USED) {
     allocation->flags = AllocationFlags::FREE;
+    allocation->ownerId = UINT16_MAX;
     memoryStats.used -= allocation->size;
     memoryStats.free += allocation->size;
     memoryStats.usedBlocks--;
     memoryStats.freeBlocks++;
-//    while (allocation->previous != nullptr && allocation->previous->isFree()) {
-//      allocation = merge(allocation->previous, allocation);
-//      memoryStats.freeBlocks--;
-//    }
 
     while (allocation->next != nullptr && allocation->next->isFree()) {
       merge(allocation, allocation->next);
@@ -153,13 +153,9 @@ void DoublyLinkedMemoryAllocator<S>::free(void *ptr) {
 }
 
 template <size_t S>
-Allocation *DoublyLinkedMemoryAllocator<S>::merge(Allocation *left,
-                                                  Allocation *right) {
+Allocation *DoublyLinkedMemoryAllocator<S>::merge(Allocation *left, Allocation *right) {
   left->size += right->size;
   left->next = right->next;
-  if (right->next != nullptr) {
-    right->next->previous = left;
-  }
 
   return left;
 }
@@ -168,5 +164,20 @@ template <size_t S>
 MemoryStats *DoublyLinkedMemoryAllocator<S>::stats() {
   return &this->memoryStats;
 }
+
+template<size_t S>
+size_t DoublyLinkedMemoryAllocator<S>::UsedMemory(uint_fast16_t ownerId) {
+    size_t size = 0;
+    auto allocation = allocationList;
+    while (allocation != nullptr) {
+        if (!allocation->isFree() && allocation->ownerId == ownerId) {
+            size += allocation->size;
+        }
+        allocation = allocation->next;
+    }
+
+    return size;
+}
+
 
 #endif  // AVR_DOUBLYLINKEDMEMORYALLOCATOR_H

@@ -12,6 +12,7 @@ target_sources(${TARGET} INTERFACE
         apps/include/misc/MemTest.h
         apps/include/misc/Null.h
         apps/include/misc/PiTask.h
+        apps/include/misc/Ps.h
         apps/include/shell/CommandLine.h
         apps/include/shell/Console.h
         apps/include/shell/ExecutableFile.h

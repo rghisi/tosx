@@ -23,6 +23,7 @@
 #include "misc/CpuTest.h"
 #include "misc/MemStatus.h"
 #include "misc/RandomTest.h"
+#include "misc/Ps.h"
 
 class RomFileSystem: public FileSystem {
 public:
@@ -45,6 +46,7 @@ void RomFileSystem::Mount(Dir *mountPoint) {
     mountPoint->Link(new ExecutableFile("cputest", &CpuTest::run));
     mountPoint->Link(new ExecutableFile("memstatus", &MemStatus::run));
     mountPoint->Link(new ExecutableFile("random", &RandomTest::run));
+    mountPoint->Link(new ExecutableFile("ps", &Ps::run));
 }
 
 

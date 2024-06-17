@@ -13,7 +13,6 @@
 
 class OS {
 public:
-    static MemoryAllocator *memoryAllocator;
     static Kernel* kernel;
 
     static void schedule(Task *task);
@@ -30,8 +29,9 @@ public:
     static void incrementTick();
     static uint32_t now();
     static void terminate(Task *task);
-    static void enterCritical();
-    static void leaveCritical();
+    static void PrintProcesses();
+
+    static void MemoryDump();
 };
 
 

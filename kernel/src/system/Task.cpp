@@ -6,8 +6,11 @@
 #include "system/TaskState.h"
 #include "system/StaticStack.h"
 
+uint_fast16_t Task::nextId = 0;
+
 Task::Task() {
-    this->stack = new StaticStack<256>();
+    this->stack = &stackStack;
+    id = nextId++;
 }
 
 Task::~Task() {
@@ -15,7 +18,7 @@ Task::~Task() {
 }
 
 void Task::initialize() {
-    //reset memory contents
+
 }
 
 void Task::block() {
@@ -23,7 +26,6 @@ void Task::block() {
 }
 
 void Task::running() {
-//    taskStats.record(this->taskState, TaskState::RUNNING);
     taskState = TaskState::RUNNING;
 }
 
@@ -55,6 +57,10 @@ bool Task::isBlocked() {
   return taskState == TaskState::BLOCKED;
 }
 
-//TaskStats Task::stats() {
-//    return taskStats;
-//}
+const char *Task::Name() {
+    return name;
+}
+
+uint_fast16_t Task::Id() {
+    return id;
+}

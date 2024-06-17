@@ -7,6 +7,7 @@
 
 #include "cstdint"
 #include "fs/FileSystemService.h"
+#include "shell/CommandLine.h"
 
 class List {
 public:
