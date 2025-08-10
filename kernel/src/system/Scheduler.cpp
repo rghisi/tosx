@@ -9,9 +9,11 @@
 #include "cstdio"
 #include "system/OS.h"
 #include "system/TaskState.h"
+#include "system/StaticStack.h"
 
 Scheduler::Scheduler() {
-  name = "Kernel";
+    name = "Kernel";
+    stack = std::make_unique<StaticStack<1024>>();
 }
 
 void Scheduler::schedule(Task *task) {

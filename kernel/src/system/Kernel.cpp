@@ -152,8 +152,8 @@ bool Kernel::enableInterrupts() {
 
 void Kernel::reportMemory() {
     auto memoryStats = OS::memoryStats();
-    auto total = memoryStats->used + memoryStats->free;
-    auto free = memoryStats->free;
+    auto total = memoryStats.used + memoryStats.free;
+    auto free = memoryStats.free;
     printf("Total memory: %u, free %u\r\n", total, free);
 }
 
@@ -171,12 +171,12 @@ std::list<Task *> Kernel::Tasks() {
     return tasks;
 }
 
-Task *Kernel::CreateTask(const char *name, int_fast8_t (*entryPoint)(char *), char *args) {
+Task *Kernel::CreateTask(const char *name, int_fast8_t (*entryPoint)(char *), char *args, size_t stackSize) {
     auto previouslyRunningTaskId = runningTaskId;
     runningTaskId = Task::nextId;
     auto argsCopy = new char[strlen(args) + 1];
     strcpy(argsCopy, args);
-    auto *task = new ExecutableTask(name, entryPoint, argsCopy);
+    auto *task = new ExecutableTask(name, entryPoint, argsCopy, stackSize);
     runningTaskId = previouslyRunningTaskId;
     return task;
 }
@@ -196,7 +196,7 @@ void *Kernel::allocateMemory(size_t size) {
     if (ptr == nullptr) {
         printf("\n\rOut of Memory - cannot allocate %u bytes - only %u bytes free - Aborting\n\r",
                size,
-               memoryAllocator->stats()->free
+               memoryAllocator->stats().free
         );
         if (currentTask != nullptr) {
             printf("OOM Kill: %s (%d)\r\n", currentTask->Name(), currentTask->Id());
@@ -221,7 +221,7 @@ void Kernel::freeMemory(void *allocation) {
     memoryAllocationMutex.release();
 }
 
-MemoryStats *Kernel::GetMemoryStats() {
+MemoryStats Kernel::GetMemoryStats() {
     return memoryAllocator->stats();
 }
 

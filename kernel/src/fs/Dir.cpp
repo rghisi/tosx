@@ -2,7 +2,7 @@
 // Created by ghisi on 19.05.24.
 //
 
-
+#include <algorithm>
 #include "fs/Dir.h"
 
 Dir::Dir(const char *name) : Node(name) {}

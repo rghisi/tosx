@@ -10,7 +10,7 @@
 template <typename T>
 class LinkedList: public FifoQueue<T> {
 public:
-    bool push(T t) override;
+    bool push(const T& t) override;
     T pop() override;
     T peek() override;
     size_t size() override;
@@ -49,7 +49,7 @@ bool LinkedList<T>::isEmpty() {
 }
 
 template<typename T>
-bool LinkedList<T>::push(T t) {
+bool LinkedList<T>::push(const T& t) {
     auto node = new Node<T>(t);
     if (first == nullptr) {
         first = node;

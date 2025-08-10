@@ -32,7 +32,7 @@ class DoublyLinkedMemoryAllocator : public MemoryAllocator {
   DoublyLinkedMemoryAllocator();
   uintptr_t *allocate(size_t requestedBytes, uint_fast16_t ownerId) override;
   void free(void *ptr) override;
-  MemoryStats *stats() override;
+  MemoryStats stats() override;
   size_t UsedMemory(uint_fast16_t i) override;
 
  private:
@@ -161,8 +161,8 @@ Allocation *DoublyLinkedMemoryAllocator<S>::merge(Allocation *left, Allocation *
 }
 
 template <size_t S>
-MemoryStats *DoublyLinkedMemoryAllocator<S>::stats() {
-  return &this->memoryStats;
+MemoryStats DoublyLinkedMemoryAllocator<S>::stats() {
+    return this->memoryStats;
 }
 
 template<size_t S>

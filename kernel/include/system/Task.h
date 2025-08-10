@@ -6,6 +6,7 @@
 #define AVR_TASK_H
 
 #include <cstdint>
+#include <memory>
 
 #include "Stack.h"
 #include "TaskState.h"
@@ -15,7 +16,7 @@
 class Task {
 public:
     explicit Task();
-    virtual ~Task();
+    virtual ~Task() = default;
     virtual void execute() = 0;
     void initialize();
     TaskState state();
@@ -29,13 +30,12 @@ public:
     bool isBlocked();
     const char *Name();
     uint_fast16_t Id();
-    Stack *stack;
+    std::unique_ptr<Stack> stack;
     static uint_fast16_t nextId;
 protected:
     uint_fast16_t id;
     const char *name;
 private:
-    StaticStack<128> stackStack = StaticStack<128>();
     TaskState taskState = TaskState::CREATED;
 };
 

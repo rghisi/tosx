@@ -11,6 +11,9 @@ void IdleTask::execute() {
 //      Serial::send('i');
     }
 }
+#include "system/StaticStack.h"
+
 IdleTask::IdleTask() {
-  name = "Idle";
+    name = "Idle";
+    stack = std::make_unique<StaticStack<128>>();
 }

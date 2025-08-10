@@ -31,9 +31,9 @@ public:
     void freeMemory(void *allocation);
     uint_fast16_t RunningTaskId();
     std::list<Task*> Tasks();
-    Task *CreateTask(const char *name, int_fast8_t (*entryPoint)(char *), char *args);
+    Task *CreateTask(const char *name, int_fast8_t (*entryPoint)(char *), char *args, size_t stackSize = 512);
 
-    MemoryStats *GetMemoryStats();
+    MemoryStats GetMemoryStats();
 
     void PrintProcesses();
 

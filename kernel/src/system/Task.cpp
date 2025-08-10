@@ -9,12 +9,7 @@
 uint_fast16_t Task::nextId = 0;
 
 Task::Task() {
-    this->stack = &stackStack;
     id = nextId++;
-}
-
-Task::~Task() {
-    delete stack;
 }
 
 void Task::initialize() {

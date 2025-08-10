@@ -8,10 +8,11 @@
 
 #include "Task.h"
 #include "TaskState.h"
+#include "DynamicStack.h"
 
 class ExecutableTask: public Task {
 public:
-    ExecutableTask(const char* name, int_fast8_t (*entryPoint)(char *), char *args);
+    ExecutableTask(const char* name, int_fast8_t (*entryPoint)(char *), char *args, size_t stackSize = 512);
     ~ExecutableTask() override;
     void execute() override;
 private:
@@ -19,10 +20,11 @@ private:
     char *args;
 };
 
-ExecutableTask::ExecutableTask(const char* name, int_fast8_t (*entryPoint)(char *), char *args) {
+ExecutableTask::ExecutableTask(const char* name, int_fast8_t (*entryPoint)(char *), char *args, size_t stackSize) {
     this->entryPointFunction = entryPoint;
     this->args = args;
     this->name = name;
+    this->stack = std::make_unique<DynamicStack>(stackSize);
 }
 
 void ExecutableTask::execute() {

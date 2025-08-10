@@ -4,6 +4,7 @@
 
 #include <string_view>
 #include <memory>
+#include <algorithm>
 #include "shell/CommandLine.h"
 
 CommandLine::CommandLine(const char *args) {
