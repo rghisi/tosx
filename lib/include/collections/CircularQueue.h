@@ -15,7 +15,7 @@ template <typename T, size_t S>
 class CircularQueue: public FifoQueue<T>{
 public:
     CircularQueue();
-    bool push(T item) override;
+    bool push(const T& item) override;
     T pop() override;
     T peek() override;
     bool isEmpty() override;
@@ -49,7 +49,7 @@ bool CircularQueue<T, S>::isFull() {
 }
 
 template<typename T, std::size_t S>
-bool CircularQueue<T, S>::push(T item) {
+bool CircularQueue<T, S>::push(const T& item) {
     if (used < CAPACITY) {
         used++;
         queue[pushIndex] = item;

@@ -36,7 +36,7 @@ public:
 
     void free(void *ptr) override;
 
-    MemoryStats *stats() override;
+    MemoryStats stats() override;
 
     size_t UsedMemory(uint_fast16_t ownerId) override;
     void Dump() override;
@@ -174,8 +174,8 @@ Allocation *SinglyLinkedMemoryAllocator::merge(Allocation *left, Allocation *rig
     return left;
 }
 
-MemoryStats *SinglyLinkedMemoryAllocator::stats() {
-    return &this->memoryStats;
+MemoryStats SinglyLinkedMemoryAllocator::stats() {
+    return this->memoryStats;
 }
 
 size_t SinglyLinkedMemoryAllocator::UsedMemory(uint_fast16_t ownerId) {

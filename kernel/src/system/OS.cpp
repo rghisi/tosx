@@ -30,12 +30,12 @@ void OS::memfree(void *p) {
  kernel->freeMemory(p);
 }
 
-MemoryStats *OS::memoryStats() {
+MemoryStats OS::memoryStats() {
     return kernel->GetMemoryStats();
 }
 
-Task *OS::createTask(const char *name, int_fast8_t (*entryPoint)(char *), char *args) {
-  return kernel->CreateTask(name, entryPoint, args);
+Task *OS::createTask(const char *name, int_fast8_t (*entryPoint)(char *), char *args, size_t stackSize) {
+    return kernel->CreateTask(name, entryPoint, args, stackSize);
 }
 
 void OS::preempt() { kernel->preempt(); }
